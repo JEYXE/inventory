@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="login" style="display:none;">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Usuario">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button onclick="login()">Login</button>
+    </div>
+    <div id="product-management" style="display:block;">
+        <h2>Gestión de Productos</h2>
+        <div>
+            <h3>Crear Producto</h3>
+            <input type="text" id="productName" placeholder="Nombre del Producto">
+            <input type="number" id="productQuantity" placeholder="Cantidad">
+            <button onclick="createProduct()">Crear</button>
+        </div>
+        <div>
+            <h3>Lista de Productos</h3>
+            <button onclick="listProducts()">Listar Productos</button>
+            <ul id="productList"></ul>
+        </div>
+        <div>
+            <h3>Movimientos de Productos</h3>
+            <input type="text" id="productId" placeholder="ID del Producto">
+            <input type="number" id="movementQuantity" placeholder="Cantidad">
+            <button onclick="addStock()">Agregar Stock</button>
+            <button onclick="removeStock()">Quitar Stock</button>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
