@@ -17,8 +17,13 @@
         <h2>Gestión de Productos</h2>
         <div>
             <h3>Crear Producto</h3>
-            <input type="text" id="productName" placeholder="Nombre del Producto">
-            <input type="number" id="productQuantity" placeholder="Cantidad">
+            <input type="text" id="productName" placeholder="Nombre del Producto" required>
+            <input type="text" id="productDescription" placeholder="Descripción">
+            <input type="text" id="productCategory" placeholder="Categoria"> 
+            <select id="productMeasure" name="Unidad de Medida">  <option value="gr">gr</option>
+                <option value="ml">ml</option>
+                <option value="und">und</option>
+            </select><br><br>        
             <button onclick="createProduct()">Crear</button>
         </div>
         <div>

@@ -1,9 +1,15 @@
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
-    category VARCHAR(255),
-    quantity INT NOT NULL
+    category INT,
+    quantity INT NOT NULL DEFAULT 0,
+    measure_unit ENUM('gr', 'ml', 'und') NOT NULL,
+    FOREIGN KEY (category) REFERENCES categories(id)
 );
 
 CREATE TABLE Inventario (
@@ -23,9 +29,15 @@ CREATE TABLE Usuarios (
     rol ENUM('administrador', 'usuario') NOT NULL
 );
 
-INSERT INTO products (name, description, category, quantity) VALUES
-('Producto A', 'Descripción del Producto A', 'Categoría 1', 100),
-('Producto B', 'Descripción del Producto B', 'Categoría 2', 50);
+INSERT INTO categories (name) VALUES
+('Categoría 1'),
+('Categoría 2');
+
+
+INSERT INTO products (name, description, category, quantity, measure_unit) VALUES
+('Producto A', 'Descripción del Producto A', 1, 100, 'gr'),
+('Producto B', 'Descripción del Producto B', 2, 50, 'ml');
+
 
 INSERT INTO Usuarios (nombre, email, contraseña, rol) VALUES
 ('Admin', 'admin@example.com', 'hashed_password', 'administrador'),

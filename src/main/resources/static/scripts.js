@@ -22,21 +22,23 @@
 
 function createProduct() {
     const name = document.getElementById('productName').value;
-    const quantity = document.getElementById('productQuantity').value;
+    const description = document.getElementById('productDescription').value;
+    const category = document.getElementById('productCategory').value;
+    const measureUnit = document.getElementById('productMeasure').value;
 
     fetch('/api/products', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name, quantity })
+        body: JSON.stringify({ name, description,category,measureUnit})
     })
     .then(response => response.json())
     .then(data => {
-        if (data.body) {
+        if (data.product) {
             alert('Producto creado');
         } else {
-            alert('Error al crear producto');
+            alert(data);
         }
     });
 }
