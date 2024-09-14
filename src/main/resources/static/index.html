@@ -3,41 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Productos</title>
+    <title>Gestión de Inventario</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="login" style="display:none;">
-        <h2>Login</h2>
-        <input type="text" id="username" placeholder="Usuario">
-        <input type="password" id="password" placeholder="Contraseña">
-        <button onclick="login()">Login</button>
-    </div>
-    <div id="product-management" style="display:block;">
-        <h2>Gestión de Productos</h2>
-        <div>
-            <h3>Crear Producto</h3>
-            <input type="text" id="productName" placeholder="Nombre del Producto" required>
-            <input type="text" id="productDescription" placeholder="Descripción">
-            <input type="text" id="productCategory" placeholder="Categoria"> 
-            <select id="productMeasure" name="Unidad de Medida">  <option value="gr">gr</option>
-                <option value="ml">ml</option>
-                <option value="und">und</option>
-            </select><br><br>        
-            <button onclick="createProduct()">Crear</button>
-        </div>
-        <div>
-            <h3>Lista de Productos</h3>
-            <button onclick="listProducts()">Listar Productos</button>
-            <ul id="productList"></ul>
-        </div>
-        <div>
-            <h3>Movimientos de Productos</h3>
-            <input type="text" id="productId" placeholder="ID del Producto">
-            <input type="number" id="movementQuantity" placeholder="Cantidad">
-            <button onclick="addStock()">Agregar Stock</button>
-            <button onclick="removeStock()">Quitar Stock</button>
-        </div>
+    <div class="container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="#home" onclick="showSection('home')">Home</a></li>
+                <li><a href="#productos" onclick="showSection('productos')">Productos</a></li>
+                <li><a href="#movimientos" onclick="showSection('movimientos')">Movimientos</a></li>
+            </ul>
+        </nav>
+        <main class="content">
+            <section id="home">
+                <h2>Bienvenido</h2>
+                <p>Bienvenido a la gestión de inventario.</p>
+            </section>
+            <section id="productos" class="hidden">
+                <h2>Productos</h2>
+                <button id="nuevoProductoBtn">Nuevo Producto</button>
+                <table id="productosTable">
+                    <!-- Aquí se llenarán los datos de la API -->
+                </table>
+                <div id="productoForm" class="form-container">
+                    <form>
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="nombre">
+                        
+                        <label for="descripcion">Descripción:</label>
+                        <input type="text" id="descripcion" name="descripcion">
+                        
+                        <label for="unidad">Unidad:</label>
+                        <select id="unidad" name="unidad">
+                            <option value="gr">gr</option>
+                            <option value="ml">ml</option>
+                            <option value="und">und</option>
+                        </select>
+                        
+                        <label for="categoria">Categoría:</label>
+                        <select id="categoria" name="categoria">
+                            <!-- Aquí se llenarán los datos de la API -->
+                        </select>
+                        <button type="button" id="nuevaCategoriaBtn">Nueva Categoría</button>
+                        
+                        <button type="submit">Guardar</button>
+                    </form>
+                </div>
+            </section>
+            <section id="movimientos" class="hidden">
+                <h2>Movimientos</h2>
+                <button id="nuevoMovimientoBtn">Nuevo Movimiento</button>
+                <table id="movimientosTable">
+                    <!-- Aquí se llenarán los datos de la API -->
+                </table>
+                <div id="movimientoForm" class="form-container">
+                    <form>
+                        <label for="fecha">Fecha:</label>
+                        <input type="date" id="fecha" name="fecha">
+                        
+                        <label for="producto">Producto:</label>
+                        <select id="producto" name="producto">
+                            <!-- Aquí se llenarán los datos de la API -->
+                        </select>
+                        
+                        <label for="cantidad">Cantidad:</label>
+                        <input type="number" id="cantidad" name="cantidad">
+                        
+                        <label for="tipoMovimiento">Tipo de Movimiento:</label>
+                        <select id="tipoMovimiento" name="tipoMovimiento">
+                            <option value="entrada">Entrada</option>
+                            <option value="salida">Salida</option>
+                        </select>
+                        
+                        <button type="submit">Guardar</button>
+                    </form>
+                </div>
+            </section>
+        </main>
     </div>
     <script src="scripts.js"></script>
 </body>
