@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     nuevoMovimientoBtn.addEventListener('click', () => {
         movimientoForm.style.display = 'block';
     });
-
+    
     // Función para mostrar secciones
     window.showSection = (sectionId) => {
         document.querySelectorAll('main section').forEach(section => {
@@ -124,3 +124,18 @@ productoForm.querySelector('form').addEventListener('submit', enviarProducto);
     fetchProductos();
     fetchCategorias();
 });
+
+// Funcion ocultar menu
+function toggleMenu() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.toggle('collapsed');
+}
+
+function showSection(section) {
+    // Lógica para mostrar la sección correspondiente
+}
+
+function logout() {
+    // Lógica para cerrar sesión
+}
+
