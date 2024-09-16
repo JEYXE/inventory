@@ -1,62 +1,75 @@
 // scripts.js
 document.addEventListener('DOMContentLoaded', () => {
+    //constantes
     const nuevoProductoBtn = document.getElementById('nuevoProductoBtn');
     const productoForm = document.getElementById('productoForm');
     const nuevoMovimientoBtn = document.getElementById('nuevoMovimientoBtn');
     const movimientoForm = document.getElementById('movimientoForm');
-
+    const categoriaForm = document.getElementById('nuevaCategoriaForm');
+    const pageSizeSelect = document.getElementById('pageSize');
+    const itemTableBody = document.getElementById('productosTable').getElementsByTagName('tbody')[0];
+    const paginationControls = document.getElementById('paginationControls');
+    //variables
+    let currentPage = 0;
+    let pageSize = parseInt(pageSizeSelect.value);
+    //evento cambiar numero de productos por pagina
+    pageSizeSelect.addEventListener('change', function () {
+        pageSize = parseInt(this.value);
+        loadPage(0);
+    });
+    //evento para mostrar formulario de nuevo producto
     nuevoProductoBtn.addEventListener('click', () => {
         productoForm.style.display = 'block';
     });
-
+    // evento para mostrar formulario de nuevo movimiento
     nuevoMovimientoBtn.addEventListener('click', () => {
         movimientoForm.style.display = 'block';
     });
-    
-    // Función para mostrar secciones
+    // evento para mostrar formulario de categoría nueva
+    document.getElementById('nuevaCategoriaBtn').addEventListener('click', function () {
+        categoriaForm.style.display = 'block';
+    });
+    //evento para ocultar formulario de nueva categoria
+    document.getElementById('cancelarNuevaCategoriaBtn').addEventListener('click', function () {
+        document.getElementById('nuevaCategoriaForm').style.display = 'none';
+        document.getElementById('Form').reset();
+    });
+    //evento para ocultar formulario de nuevo producto
+    document.getElementById('cancelarBtn').addEventListener('click', function () {
+        productoForm.style.display = 'none';
+        document.getElementById('mainForm').reset();
+    });
+    // evento para mostrar secciones
     window.showSection = (sectionId) => {
         document.querySelectorAll('main section').forEach(section => {
             section.classList.add('hidden');
         });
         document.getElementById(sectionId).classList.remove('hidden');
     };
-
-    // Función para obtener datos de la API y llenar la tabla de productos
-    const fetchProductos = async () => {
-        try {
-            const response = await fetch('/api/products');
-            if (!response.ok) {
-                throw new Error('Error al obtener los productos');
-            }
-            const productos = await response.json();
-            const productosTable = document.getElementById('productosTable');
-            productosTable.innerHTML = `
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Unidad</th>
-                    <th>Categoría</th>
-                    <th>Quantity</th>
-                </tr>
-            `;
-            productos.forEach(producto => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${producto.id}</td>
-                    <td>${producto.name}</td>
-                    <td>${producto.description}</td>
-                    <td>${producto.measureUnit}</td>
-                    <td>${producto.category}</td>
-                    <td>${producto.quantity}</td>
-                `;
-                productosTable.appendChild(row);
+    // funcion para cargar productos en la tabla con paginación
+    function loadPage(page) {
+        fetch(`/api/products?page=${page}&size=${pageSize}`)
+            .then(response => response.json())
+            .then(data => {
+                itemTableBody.innerHTML = '';
+                data.content.forEach(item => {
+                    const row = itemTableBody.insertRow();
+                    row.insertCell(0).textContent = item.id;
+                    row.insertCell(1).textContent = item.name;
+                    row.insertCell(2).textContent = item.description;
+                    row.insertCell(3).textContent = item.measureUnit;
+                    row.insertCell(4).textContent = item.category;
+                    row.insertCell(3).textContent = item.quantity;
+                });
+                paginationControls.innerHTML = '';
+                for (let i = 0; i < data.totalPages; i++) {
+                    const button = document.createElement('button');
+                    button.textContent = i + 1;
+                    button.addEventListener('click', () => loadPage(i));
+                    paginationControls.appendChild(button);
+                }
             });
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
+    }
     // Función para obtener datos de la API y llenar el selector de categorías
     const fetchCategorias = async () => {
         try {
@@ -77,64 +90,88 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error:', error);
         }
     };
+    // Función para enviar datos del formulario de productos a la API
+    const enviarProducto = async (event) => {
+        event.preventDefault();
+        const name = document.getElementById('nombre').value;
+        const description = document.getElementById('descripcion').value;
+        const measureUnit = document.getElementById('unidad').value;
+        const categoryId = document.getElementById('categoria').value;
+        const producto = {
+            name,
+            description,
+            measureUnit,
+            categoryId
+        };
+        try {
+            const response = await fetch('/api/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(producto)
+            });
 
-// Función para enviar datos del formulario a la API
-const enviarProducto = async (event) => {
-    event.preventDefault();
-    const name = document.getElementById('nombre').value;
-    const description = document.getElementById('descripcion').value;
-    const measureUnit = document.getElementById('unidad').value;
-    const categoryId = document.getElementById('categoria').value;
+            if (!response.ok) {
+                const rspuesta = await response.json();
+                alert(rspuesta.name);
+                throw new Error('Error al crear el producto');
+            }
 
-    const producto = {
-        name,
-        description,
-        measureUnit,
-        categoryId
-    };
-    console.log(producto);
-
-    try {
-        const response = await fetch('/api/products', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(producto)
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al crear el producto');
+            const nuevoProducto = await response.json();
+            console.log('Producto creado:', nuevoProducto);
+            // Actualizar la tabla de productos
+            loadPage(currentPage);
+            // Ocultar el formulario
+            document.getElementById('mainForm').reset();
+            productoForm.style.display = 'none';
+        } catch (error) {
+            console.error('Error:', error);
         }
-
-        const nuevoProducto = await response.json();
-        console.log('Producto creado:', nuevoProducto);
-        // Actualizar la tabla de productos
-        fetchProductos();
-        // Ocultar el formulario
-        productoForm.style.display = 'none';
-    } catch (error) {
-        console.error('Error:', error);
-    }
-};
-
-// Añadir evento de envío al formulario de productos
-productoForm.querySelector('form').addEventListener('submit', enviarProducto);
+    };
+    //funsion para enviar forumlario de categorias a la API
+    const enviarCategoria = async (event) => {
+        event.preventDefault();
+        const name = document.getElementById('nuevaCategoriaNombre').value;
+        const categoria = {
+            name
+        };
+        try {
+            const response = await fetch('/api/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(categoria)
+            });
+            if (!response.ok) {
+                const respuesta = await response.json();
+                alert(respuesta.name);
+                throw new Error('Error al crear la categoria');
+            }
+            const nuevoCategoria = await response.json();
+            console.log('Producto creado:', nuevoCategoria);
+            fetchCategorias();
+            document.getElementById('Form').reset();
+            categoriaForm.style.display = 'none';
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    //evento de envío al formulario de productos
+    productoForm.querySelector('form').addEventListener('submit', enviarProducto);
+      //evento de envío al formulario de productos
+    categoriaForm.querySelector('form').addEventListener('submit', enviarCategoria);
     // Llamar a las funciones para obtener los datos al cargar la página
-    fetchProductos();
+    loadPage(currentPage);
     fetchCategorias();
 });
-
 // Funcion ocultar menu
 function toggleMenu() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.classList.toggle('collapsed');
 }
-
-function showSection(section) {
-    // Lógica para mostrar la sección correspondiente
-}
-
+//funcion para salir
 function logout() {
     // Lógica para cerrar sesión
 }

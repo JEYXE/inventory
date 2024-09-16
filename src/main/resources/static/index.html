@@ -6,7 +6,6 @@
     <title>Gestión de Inventario</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 </head>
 <body>
     <div class="container">
@@ -15,20 +14,21 @@
                 <img src="logo.png" alt="Logo">
             </div>
             <ul>
-                <li><a href="#home" onclick="showSection('home')"><i class="fas fa-home"></i><span class="text">Home</span></a></li>
-                <li><a href="#productos" onclick="showSection('productos')"><i class="fas fa-box"></i><span class="text">Productos</span></a></li>
-                <li><a href="#movimientos" onclick="showSection('movimientos')"><i class="fas fa-exchange-alt"></i><span class="text">Movimientos</span></a></li>
+                <li><a href="#home" onclick="showSection('home')"><i class="fas fa-home"></i><span
+                            class="text">Home</span></a></li>
+                <li><a href="#productos" onclick="showSection('productos')"><i class="fas fa-box"></i><span
+                            class="text">Productos</span></a></li>
+                <li><a href="#movimientos" onclick="showSection('movimientos')"><i class="fas fa-exchange-alt"></i><span
+                            class="text">Movimientos</span></a></li>
             </ul>
             <div class="bottom-section">
                 <div class="logout">
-                    <a href="#logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span class="text">Log Out</span></a>
+                    <a href="#logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span
+                            class="text">Salir</span></a>
                 </div>
                 <button class="toggle-btn" onclick="toggleMenu()">☰</button>
             </div>
         </nav>
-        
-        
-               
         <main class="content">
             <section id="home">
                 <h2>Bienvenido</h2>
@@ -38,31 +38,59 @@
                 <h2>Productos</h2>
                 <button id="nuevoProductoBtn">Nuevo Producto</button>
                 <table id="productosTable">
-                    <!-- Aquí se llenarán los datos de la API -->
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Unidad</th>
+                            <th>Categoría</th>
+                            <th>Catidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be inserted here by JavaScript -->
+                    </tbody>
                 </table>
+                <div>
+                    <label for="pageSize">Items per page:</label>
+                    <select id="pageSize">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+                <div id="paginationControls">
+                    <!-- Pagination buttons will be inserted here by JavaScript -->
+                </div>
                 <div id="productoForm" class="form-container">
-                    <form>
+                    <form id="mainForm">
                         <label for="nombre">Nombre:</label>
-                        <input type="text" id="nombre" name="nombre">
-                        
+                        <input type="text" id="nombre" name="nombre" required>
                         <label for="descripcion">Descripción:</label>
-                        <input type="text" id="descripcion" name="descripcion">
-                        
+                        <input type="text" id="descripcion" name="descripcion" required>
                         <label for="unidad">Unidad:</label>
                         <select id="unidad" name="unidad">
                             <option value="gr">gr</option>
                             <option value="ml">ml</option>
                             <option value="und">und</option>
                         </select>
-                        
                         <label for="categoria">Categoría:</label>
                         <select id="categoria" name="categoria">
                             <!-- Aquí se llenarán los datos de la API -->
                         </select>
-                        <button type="button" id="nuevaCategoriaBtn">Nueva Categoría</button>
-                        
                         <button type="submit">Guardar</button>
+                        <button type="button" id="cancelarBtn">Cancelar</button>
                     </form>
+                    <button type="button" id="nuevaCategoriaBtn">Nueva Categoría</button>
+                    <div id="nuevaCategoriaForm" style="display: none;">
+                        <form id="Form">
+                            <label for="nuevaCategoriaNombre">Nombre de la nueva categoría:</label>
+                            <input type="text" id="nuevaCategoriaNombre" name="nuevaCategoriaNombre" required>
+                            <button type="submit" id="guardarNuevaCategoriaBtn">Guardar</button>
+                            <button type="button" id="cancelarNuevaCategoriaBtn">Cancelar</button>
+                        </form>
+                    </div>
                 </div>
             </section>
             <section id="movimientos" class="hidden">
@@ -75,21 +103,17 @@
                     <form>
                         <label for="fecha">Fecha:</label>
                         <input type="date" id="fecha" name="fecha">
-                        
                         <label for="producto">Producto:</label>
                         <select id="producto" name="producto">
                             <!-- Aquí se llenarán los datos de la API -->
                         </select>
-                        
                         <label for="cantidad">Cantidad:</label>
                         <input type="number" id="cantidad" name="cantidad">
-                        
                         <label for="tipoMovimiento">Tipo de Movimiento:</label>
                         <select id="tipoMovimiento" name="tipoMovimiento">
                             <option value="entrada">Entrada</option>
                             <option value="salida">Salida</option>
                         </select>
-                        
                         <button type="submit">Guardar</button>
                     </form>
                 </div>
