@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
     <div class="container">
         <nav class="sidebar">
@@ -16,17 +18,17 @@
             <ul>
                 <li><a href="#home" onclick="showSection('home')"><i class="fas fa-home"></i><span
                             class="text">Home</span></a></li>
-                <li><a href="#productos" onclick="showSection('productos')"><i class="fas fa-box"></i><span
+                <li><a href="#productos" onclick="showSection('products')"><i class="fas fa-box"></i><span
                             class="text">Productos</span></a></li>
                 <li><a href="#movimientos" onclick="showSection('movimientos')"><i class="fas fa-exchange-alt"></i><span
                             class="text">Movimientos</span></a></li>
             </ul>
             <div class="bottom-section">
                 <div class="logout">
-                    <a href="#logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span
+                    <a href="#logout" id="logOutBtn"><i class="fas fa-sign-out-alt"></i><span
                             class="text">Salir</span></a>
                 </div>
-                <button class="toggle-btn" onclick="toggleMenu()">☰</button>
+                <button class="toggle-btn" id="hideMenuBtn">☰</button>
             </div>
         </nav>
         <main class="content">
@@ -34,10 +36,10 @@
                 <h2>Bienvenido</h2>
                 <p>Bienvenido a la gestión de inventario.</p>
             </section>
-            <section id="productos" class="hidden">
+            <section id="products" class="hidden">
                 <h2>Productos</h2>
-                <button id="nuevoProductoBtn">Nuevo Producto</button>
-                <table id="productosTable">
+                <button id="newProductBtn">Nuevo Producto</button>
+                <table id="productTable">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -46,6 +48,7 @@
                             <th>Unidad</th>
                             <th>Categoría</th>
                             <th>Catidad</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,7 +56,7 @@
                     </tbody>
                 </table>
                 <div>
-                    <label for="pageSize">Items per page:</label>
+                    <label for="pageSize">Productos por pagina:</label>
                     <select id="pageSize">
                         <option value="5">5</option>
                         <option value="10">10</option>
@@ -63,32 +66,32 @@
                 <div id="paginationControls">
                     <!-- Pagination buttons will be inserted here by JavaScript -->
                 </div>
-                <div id="productoForm" class="form-container">
-                    <form id="mainForm">
+                <div id="productCreateFormContainer" class="form-container">
+                    <form id="productCreateForm">
                         <label for="nombre">Nombre:</label>
-                        <input type="text" id="nombre" name="nombre" required>
+                        <input type="text" id="createProductName" name="nombre" required>
                         <label for="descripcion">Descripción:</label>
-                        <input type="text" id="descripcion" name="descripcion" required>
+                        <input type="text" id="createProductDescription" name="descripcion" required>
                         <label for="unidad">Unidad:</label>
-                        <select id="unidad" name="unidad">
+                        <select id="createProductMeasureUnit" name="unidad">
                             <option value="gr">gr</option>
                             <option value="ml">ml</option>
                             <option value="und">und</option>
                         </select>
                         <label for="categoria">Categoría:</label>
-                        <select id="categoria" name="categoria">
+                        <select id="createProductCategory" name="categoria">
                             <!-- Aquí se llenarán los datos de la API -->
                         </select>
                         <button type="submit">Guardar</button>
-                        <button type="button" id="cancelarBtn">Cancelar</button>
+                        <button type="button" id="cancelCreateProductBtn">Cancelar</button>
                     </form>
-                    <button type="button" id="nuevaCategoriaBtn">Nueva Categoría</button>
-                    <div id="nuevaCategoriaForm" style="display: none;">
-                        <form id="Form">
+                    <button type="button" id="newCategoryBtn">Nueva Categoría</button>
+                    <div id="categoryCreateFormContainer" style="display: none;">
+                        <form id="categoryCreateForm">
                             <label for="nuevaCategoriaNombre">Nombre de la nueva categoría:</label>
-                            <input type="text" id="nuevaCategoriaNombre" name="nuevaCategoriaNombre" required>
-                            <button type="submit" id="guardarNuevaCategoriaBtn">Guardar</button>
-                            <button type="button" id="cancelarNuevaCategoriaBtn">Cancelar</button>
+                            <input type="text" id="createCategoryname" name="nuevaCategoriaNombre" required>
+                            <button type="submit" id="saveNewCategoryBtn">Guardar</button>
+                            <button type="button" id="cancelNewCategoryBtn">Cancelar</button>
                         </form>
                     </div>
                 </div>
@@ -118,8 +121,71 @@
                     </form>
                 </div>
             </section>
+            <section id="product" class="hidden">
+                <button id="volverBtn" >Volver</button>
+                <button id="actualizarProductoBtn">Actualizar</button>
+                <button id="eliminarProductoBtn">Eliminar</button>
+                <div class="json-container" id="jsonContainer"></div>
+                <table id="movimientosProductoTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Unidad</th>
+                            <th>Categoría</th>
+                            <th>Catidad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                         
+                    </tbody>
+                </table>
+                <div>
+                    <label for="pageSize">Items per page:</label>
+                    <select id="pageSize">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+                <div id="paginationControls">
+                    
+                </div>
+                <div id="productUpdateFormContainer" class="form-container">
+                    <form id="productUpdateForm">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="updateNombre" name="nombre" required>
+                        <label for="descripcion">Descripción:</label>
+                        <input type="text" id="updateDescription" name="descripcion" required>
+                        <label for="unidad">Unidad:</label>
+                        <select id="updateMeasureUnit" name="unidad">
+                            <option value="gr">gr</option>
+                            <option value="ml">ml</option>
+                            <option value="und">und</option>
+                        </select>
+                        <label for="categoria">Categoría:</label>
+                        <select id="categorySelect" name="categoria">
+                             
+                        </select>
+                        <button type="submit">Guardar</button>
+                        <button type="button" id="cancelUpdateProductBtn">Cancelar</button>
+                    </form>
+                    <button type="button" id="newCategoryUpdateProductBtn">Nueva Categoría</button>
+                    <div id="newCategoryUpdateProductFormContainer" style="display: none;">
+                        <form id="Form">
+                            <label for="nuevaCategoriaNombre">Nombre de la nueva categoría:</label>
+                            <input type="text" id="newCategoryNameUpdateProductForm" name="nuevaCategoriaNombre" required>
+                            <button type="submit" id="guardarNuevaCategoriaBtn">Guardar</button>
+                            <button type="button" id="cancelarNuevaCategoriaBtn">Cancelar</button>
+                        </form>
+                    </div>
+                </div>
+           </section>
         </main>
     </div>
     <script src="scripts.js"></script>
 </body>
+
 </html>

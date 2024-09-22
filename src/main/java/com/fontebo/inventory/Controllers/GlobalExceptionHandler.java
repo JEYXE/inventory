@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fontebo.inventory.Exceptions.CategoriaDuplicadaException;
 import com.fontebo.inventory.Exceptions.ProductoDupicladoException;
+import com.fontebo.inventory.Exceptions.ProductoNoExisteException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +36,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProductoDupicladoException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String,String>> handleProductoDuplicadaException(ProductoDupicladoException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("name", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ProductoNoExisteException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String,String>> handleProductoDuplicadaException(ProductoNoExisteException ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("name", ex.getMessage());
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
