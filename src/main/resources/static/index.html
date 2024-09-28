@@ -99,11 +99,33 @@
             <section id="movimientos" class="hidden">
                 <h2>Movimientos</h2>
                 <button id="nuevoMovimientoBtn">Nuevo Movimiento</button>
-                <table id="movimientosTable">
-                    <!-- Aquí se llenarán los datos de la API -->
+                <table id="movementTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Movimiento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be inserted here by JavaScript -->
+                    </tbody>
                 </table>
-                <div id="movimientoForm" class="form-container">
-                    <form>
+                <div>
+                    <label for="movementPageSize">Productos por pagina:</label>
+                    <select id="movementPageSize">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+                <div id="movementPaginationControls">
+                    <!-- Pagination buttons will be inserted here by JavaScript -->
+                </div>
+                <div id="movementFormContainer" class="form-container">
+                    <form id="movementForm">
                         <label for="fecha">Fecha:</label>
                         <input type="date" id="fecha" name="fecha">
                         <label for="producto">Producto:</label>
@@ -118,6 +140,7 @@
                             <option value="salida">Salida</option>
                         </select>
                         <button type="submit">Guardar</button>
+                        <button type="button" id="cancelCreateMovementBtn">Cancelar</button>
                     </form>
                 </div>
             </section>

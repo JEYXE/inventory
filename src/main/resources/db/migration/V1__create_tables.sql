@@ -12,20 +12,20 @@ CREATE TABLE products (
     FOREIGN KEY (category) REFERENCES categories(id)
 );
 
-CREATE TABLE Inventario (
+CREATE TABLE movements (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    producto_id INT,
-    tipo_movimiento ENUM('entrada', 'salida') NOT NULL,
-    cantidad INT NOT NULL,
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (producto_id) REFERENCES products(id)
+    product_id INT,
+    movement_type ENUM('entrada', 'salida') NOT NULL,
+    quantity INT NOT NULL,
+    movement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
-CREATE TABLE Usuarios (
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    contraseña VARCHAR(255) NOT NULL,
+    user_password VARCHAR(255) NOT NULL,
     rol ENUM('administrador', 'usuario') NOT NULL
 );
 
@@ -35,10 +35,14 @@ INSERT INTO categories (name) VALUES
 
 
 INSERT INTO products (name, description, category, quantity, measure_unit) VALUES
-('Producto A', 'Descripción del Producto A', 1, 100, 'gr'),
-('Producto B', 'Descripción del Producto B', 2, 50, 'ml');
+('Producto A', 'Descripción del Producto A', 1, 0, 'gr'),
+('Producto B', 'Descripción del Producto B', 2, 0, 'ml');
 
 
-INSERT INTO Usuarios (nombre, email, contraseña, rol) VALUES
+INSERT INTO users (name, email, user_password, rol) VALUES
 ('Admin', 'admin@example.com', 'hashed_password', 'administrador'),
 ('Usuario', 'usuario@example.com', 'hashed_password', 'usuario');
+
+INSERT INTO movements (movement_date, product_id, quantity, movement_type) VALUES
+('2024-09-26T00:00:00', 1, 10, 'entrada'),
+('2024-09-26T00:00:00', 2, 20, 'salida');

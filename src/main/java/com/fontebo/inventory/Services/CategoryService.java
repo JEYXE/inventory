@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fontebo.inventory.Exceptions.CategoriaDuplicadaException;
+import com.fontebo.inventory.Exceptions.Exception;
 import com.fontebo.inventory.Models.Category;
 import com.fontebo.inventory.Repositories.CategoryRepository;
 
@@ -19,7 +19,7 @@ public class CategoryService {
     public Category createCategory(Category category) {
         Optional<Category> categoriaExistente = categoryRepository.findByName(category.getName());
         if (categoriaExistente.isPresent()) {
-             throw new CategoriaDuplicadaException("No se permiten duplicados");
+             throw new Exception("No se permiten duplicados");
         } else {
             Category nuevaCategoria = new Category();
             nuevaCategoria.setName(category.getName());

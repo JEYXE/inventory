@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.fontebo.inventory.Exceptions.ProductoDupicladoException;
+import com.fontebo.inventory.Exceptions.Exception;
 import com.fontebo.inventory.Models.Product;
 import com.fontebo.inventory.Records.ProductCreationRecord;
 import com.fontebo.inventory.Records.ProductListRecord;
@@ -24,7 +24,7 @@ public class ProductService {
     public ProductListRecord createProduct(ProductCreationRecord productRecord) {
         Optional<Product> ProductoExistente = productRepository.findByName(productRecord.name());
         if (ProductoExistente.isPresent()) {
-            throw new ProductoDupicladoException("No se permiten duplicados");
+            throw new Exception("No se permiten productos con el mismo nombre");
         } else {
             var name = productRecord.name();
             var description = productRecord.description();
@@ -45,7 +45,7 @@ public class ProductService {
             Product producto = productRepository.getReferenceById(id);
             return new ProductListRecord(producto);
         } else {
-            throw new ProductoDupicladoException("El producto no existe");
+            throw new Exception("El producto no existe");
         }
     }
 
@@ -78,7 +78,7 @@ public class ProductService {
             return new ProductListRecord(productoActualizado);
         }else{
         // Manejar el caso en que el producto no se encuentra
-        throw new ProductoDupicladoException("Product not found with id: " + id);
+        throw new Exception("No se encontro el producto con id: " + id);
     }
 }
     // Otros métodos para editar y eliminar productos
