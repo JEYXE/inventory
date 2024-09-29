@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const nuevoProducto = await response.json();
             console.log('Producto creado:', nuevoProducto);
+            alert('Producto creado satisfactoriamente')
             // Actualizar la tabla de productos
             loadPage(currentPage);
             // Ocultar el formulario
@@ -174,7 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const categoria = {
             name
         };
-        alert(categoria.JSON)
         try {
             const response = await fetch('/api/categories', {
                 method: 'POST',
@@ -190,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const nuevoCategoria = await response.json();
             console.log('Producto creado:', nuevoCategoria);
+            alert('Categoría creada satisfactoriamente');
             fetchCategorias(createProductCategory);
             document.getElementById('categoryCreateForm').reset();
             categoryCreateFormContainer.style.display = 'none';
@@ -237,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         productUpdateFormContainer.style.display = 'block';
         copyValues();
     });
-
+    //funsion para actualizar producto
     const productUpdate = async (event) => {
         event.preventDefault();
         const id = document.getElementById('id').textContent;
@@ -268,6 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const nuevoProducto = await response.json();
             console.log('Producto creado:', nuevoProducto);
+            alert('Producto actualizado satisfactoriamente')
             // Actualizar la tabla de productos
             loadPage(currentPage);
             productDetails(id);
@@ -310,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const nuevoCategoria = await response.json();
             console.log('Producto creado:', nuevoCategoria);
+            alert('Categoría creada satisfactoriamente')
             fetchCategorias(categorySelect);
             document.getElementById('Form').reset();
             newCategoryUpdateProductFormContainer.style.display = 'none';
@@ -361,8 +364,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     //funciones para movimientos***********************************************************************************
-
-
     // evento para mostrar formulario de nuevo movimiento
     const nuevoMovimientoBtn = document.getElementById('nuevoMovimientoBtn');
     const movementFormContainer = document.getElementById('movementFormContainer');
@@ -370,8 +371,6 @@ document.addEventListener('DOMContentLoaded', () => {
         movementFormContainer.style.display = 'block';
     });
     // funcion para traer todos los movimientos
-
-    // funcion para cargar productos en la tabla con paginación
     const movementPageSizeSelect = document.getElementById('movementPageSize');
     const movementTableBody = document.getElementById('movementTable').getElementsByTagName('tbody')[0];
     const movementPaginationControls = document.getElementById('movementPaginationControls');
@@ -400,12 +399,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
     movementTableLoad(movementCurrentPage);
-    //evento cambiar numero de productos por pagina
+    //evento cambiar numero de movimientos por pagina
     movementPageSizeSelect.addEventListener('change', function () {
         pageSize = parseInt(this.value);
         movementTableLoad(0);
     });
-    // Función para obtener datos de la API y llenar el selector de categorías
+    // Función para obtener datos de la API y llenar el selector de productos
     const fetchProducts = async (productSelect) => {
         try {
             const response = await fetch('/api/products');
@@ -425,9 +424,45 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error:', error);
         }
     };
-    const createMovementProduct = document.getElementById('producto');
+    const createMovementProduct = document.getElementById('productId');
     fetchProducts(createMovementProduct);
-
+    // evento para guardar un nuevo movimiento
+    const createMovement = async (event) => {
+        event.preventDefault();
+        const movementDate = document.getElementById('movementDate').value;
+        const productId = document.getElementById('productId').value;
+        const quantity = document.getElementById('quantity').value;
+        const movementType = document.getElementById('movementType').value;
+        const movement = {
+            movementDate,
+            productId,
+            quantity,
+            movementType
+        };
+        try {
+            const response = await fetch('/api/movements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(movement)
+            });
+            if (!response.ok) {
+                const respuesta = await response.json();
+                alert(respuesta.name);
+                throw new Error('Error al insertar nuevo registro');
+            }
+            const newMovement = await response.json();
+            console.log('Producto creado:', newMovement);
+            movementTableLoad(movementCurrentPage);
+            document.getElementById('movementForm').reset();
+            movementFormContainer.style.display = 'none';
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    movementFormContainer.querySelector('form').addEventListener('submit', createMovement);
+    // evento para cancelar un nuevo movimiento
     const cancelCreateMovementBtn = document.getElementById('cancelCreateMovementBtn');
     cancelCreateMovementBtn.addEventListener('click', function () {
         movementFormContainer.style.display = 'none';

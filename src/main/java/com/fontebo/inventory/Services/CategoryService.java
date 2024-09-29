@@ -19,7 +19,7 @@ public class CategoryService {
     public Category createCategory(Category category) {
         Optional<Category> categoriaExistente = categoryRepository.findByName(category.getName());
         if (categoriaExistente.isPresent()) {
-             throw new Exception("No se permiten duplicados");
+             throw new Exception("La categoría ya existe");
         } else {
             Category nuevaCategoria = new Category();
             nuevaCategoria.setName(category.getName());

@@ -24,7 +24,7 @@ public class ProductService {
     public ProductListRecord createProduct(ProductCreationRecord productRecord) {
         Optional<Product> ProductoExistente = productRepository.findByName(productRecord.name());
         if (ProductoExistente.isPresent()) {
-            throw new Exception("No se permiten productos con el mismo nombre");
+            throw new Exception("El producto ya existe");
         } else {
             var name = productRecord.name();
             var description = productRecord.description();
@@ -62,6 +62,12 @@ public class ProductService {
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
             if(productRecord.name()!=null){
+                Optional<Product> productOptionalByName = productRepository.findByName(productRecord.name());
+                if(productOptionalByName.isPresent()&&!product.getName().equals(productRecord.name())){
+                    System.out.println(productOptional.get().getName());
+                    System.out.println(productRecord.name());
+                    throw new Exception("Este nombre corresponde a un producto ya existente");
+                }
                 product.setName(productRecord.name());
             }
             if(productRecord.description()!=null){

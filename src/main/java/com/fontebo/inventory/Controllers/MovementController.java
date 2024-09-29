@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fontebo.inventory.Records.MovementCreationRecord;
 import com.fontebo.inventory.Records.MovementListRecord;
-import com.fontebo.inventory.Records.ProductListRecord;
 import com.fontebo.inventory.Services.MovementService;
+
+import jakarta.transaction.Transactional;
 
 
 
@@ -27,6 +28,7 @@ public class MovementController {
     private MovementService movementService;
 
     @PostMapping
+    @Transactional
     public ResponseEntity<MovementListRecord> createMovement(@Validated @RequestBody MovementCreationRecord movement) {
         var createdMovement = movementService.createMovement(movement);
         return ResponseEntity.ok(createdMovement);

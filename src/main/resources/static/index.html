@@ -127,15 +127,15 @@
                 <div id="movementFormContainer" class="form-container">
                     <form id="movementForm">
                         <label for="fecha">Fecha:</label>
-                        <input type="date" id="fecha" name="fecha">
+                        <input type="datetime-local" id="movementDate" name="fecha" required>
                         <label for="producto">Producto:</label>
-                        <select id="producto" name="producto">
+                        <select id="productId" name="producto" required>
                             <!-- Aquí se llenarán los datos de la API -->
                         </select>
                         <label for="cantidad">Cantidad:</label>
-                        <input type="number" id="cantidad" name="cantidad">
+                        <input type="number" id="quantity" name="cantidad" required>
                         <label for="tipoMovimiento">Tipo de Movimiento:</label>
-                        <select id="tipoMovimiento" name="tipoMovimiento">
+                        <select id="movementType" name="tipoMovimiento" required>
                             <option value="entrada">Entrada</option>
                             <option value="salida">Salida</option>
                         </select>
@@ -149,32 +149,30 @@
                 <button id="actualizarProductoBtn">Actualizar</button>
                 <button id="eliminarProductoBtn">Eliminar</button>
                 <div class="json-container" id="jsonContainer"></div>
-                <table id="movimientosProductoTable">
+                <table id="movementTable">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Unidad</th>
-                            <th>Categoría</th>
-                            <th>Catidad</th>
-                            <th>Acciones</th>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Movimiento</th>
                         </tr>
                     </thead>
                     <tbody>
-                         
+                        <!-- Rows will be inserted here by JavaScript -->
                     </tbody>
                 </table>
                 <div>
-                    <label for="pageSize">Items per page:</label>
-                    <select id="pageSize">
+                    <label for="movementPageSize">Productos por pagina:</label>
+                    <select id="movementPageSize">
                         <option value="5">5</option>
                         <option value="10">10</option>
                         <option value="20">20</option>
                     </select>
                 </div>
-                <div id="paginationControls">
-                    
+                <div id="movementPaginationControls">
+                    <!-- Pagination buttons will be inserted here by JavaScript -->
                 </div>
                 <div id="productUpdateFormContainer" class="form-container">
                     <form id="productUpdateForm">

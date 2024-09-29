@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record ProductCreationRecord(
-        @NotBlank(message = "El nombre no puede ser vacío")
+        @NotBlank(message = "El nombre del producto no puede estar vacío")
         @NotNull(message = "El nombre es obligatorio")
         String name,
         String description,
