@@ -26,6 +26,47 @@ document.addEventListener('DOMContentLoaded', () => {
     newProductBtn.addEventListener('click', () => {
         productCreateFormContainer.style.display = 'block';
     });
+    function filterTable() {
+        const filter = document.getElementById('filterInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#productTable tbody tr');
+        rows.forEach(row => {
+            const cells = Array.from(row.cells);
+            const match = cells.some(cell => cell.innerText.toLowerCase().includes(filter));
+            row.style.display = match ? '' : 'none';
+        });
+    }
+    document.getElementById('filterInput').addEventListener('keyup', filterTable);
+    let sortOrder = 'asc'; // Estado inicial de ordenamiento
+
+    window.sortTable = (columnIndex) => {
+        const table = document.getElementById('productTable');
+        const rows = Array.from(table.rows).slice(1);
+        const sortedRows = rows.sort((a, b) => {
+            const cellA = a.cells[columnIndex].innerText.toLowerCase();
+            const cellB = b.cells[columnIndex].innerText.toLowerCase();
+            if (sortOrder === 'asc') {
+                return cellA.localeCompare(cellB);
+            } else {
+                return cellB.localeCompare(cellA);
+            }
+        });
+
+        function obtenerFilas() {
+            const tabla = document.getElementById('productTable');
+            const filas = tabla.getElementsByTagName('tr');
+            for (let i = 0; i < filas.length; i++) {
+                console.log(filas[i].innerText);
+            }
+        }
+
+        obtenerFilas();
+    
+        // Alternar el estado de ordenamiento
+        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    
+        table.tBodies[0].append(...sortedRows);
+    };
+
     // funcion para cargar productos en la tabla con paginación
     const pageSizeSelect = document.getElementById('pageSize');
     const itemTableBody = document.getElementById('productTable').getElementsByTagName('tbody')[0];
@@ -68,9 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
         loadPage(0);
     });
     //funcion para traer el el detalle del producto desde el icono de la tabla
+    let productMovementId = 0;
     function productDetails(id) {
-        showSection('product');
+        productMovementId = id,
+            showSection('product');
         fetchCategorias(categorySelect);
+        productMovementTableLoad(productMovementCurrentPage, id);
         fetch(`/api/products/${id}`)
             .then(response => response.json())
             .then(data => {
@@ -91,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         container.appendChild(item);
                     }
                 }
+
             });
     }
     //Funciones para crear un producto******************************************************************************
@@ -363,6 +408,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }
     });
+    //funcion para traer los movimientos del producto
+    const productMovementPageSizeSelect = document.getElementById('productMovementPageSize');
+    const productMovementTableBody = document.getElementById('productMovementTable').getElementsByTagName('tbody')[0];
+    const productMovementPaginationControls = document.getElementById('productMovementPaginationControls');
+    let productMovementCurrentPage = 0;
+    let productMovementPageSize = parseInt(productMovementPageSizeSelect.value);
+    function productMovementTableLoad(page, id) {
+        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}`)
+            .then(response => response.json())
+            .then(data => {
+                productMovementTableBody.innerHTML = '';
+                data.content.forEach(item => {
+                    const row = productMovementTableBody.insertRow();
+                    row.insertCell(0).textContent = item.id;
+                    row.insertCell(1).textContent = item.movementDate;
+                    row.insertCell(2).textContent = item.productName;
+                    row.insertCell(3).textContent = item.quantity;
+                    row.insertCell(4).textContent = item.movementType;
+                });
+                productMovementPaginationControls.innerHTML = '';
+                for (let i = 0; i < data.totalPages; i++) {
+                    const button = document.createElement('button');
+                    button.textContent = i + 1;
+                    button.addEventListener('click', () => productMovementTableLoad(i, id));
+                    productMovementPaginationControls.appendChild(button);
+                }
+            });
+    }
+    //evento cambiar numero de movimientos por pagina
+    productMovementPageSizeSelect.addEventListener('change', function () {
+        productMovementPageSize = parseInt(this.value);
+        productMovementTableLoad(0, productMovementId);
+    });
+
     //funciones para movimientos***********************************************************************************
     // evento para mostrar formulario de nuevo movimiento
     const nuevoMovimientoBtn = document.getElementById('nuevoMovimientoBtn');
@@ -401,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
     movementTableLoad(movementCurrentPage);
     //evento cambiar numero de movimientos por pagina
     movementPageSizeSelect.addEventListener('change', function () {
-        pageSize = parseInt(this.value);
+        movementPageSize = parseInt(this.value);
         movementTableLoad(0);
     });
     // Función para obtener datos de la API y llenar el selector de productos

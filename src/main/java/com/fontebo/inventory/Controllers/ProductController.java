@@ -1,6 +1,7 @@
 package com.fontebo.inventory.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +37,11 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<Page<ProductListRecord>> getItems(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(productService.getItems(PageRequest.of(page, size)));
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "DESC") String direction) {
+                Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);    
+        return ResponseEntity.ok(productService.getItems(PageRequest.of(page, size, sort)));
     }
 
     @GetMapping("/{id}")

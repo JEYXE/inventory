@@ -52,4 +52,8 @@ public class MovementService {
         return movementRepository.findAll(pageable).map(MovementListRecord::new);
     }
 
+    public Page<MovementListRecord> getItemsByProduct(Pageable pageable, Long id) {
+        return movementRepository.findByProductId(pageable,id).map(MovementListRecord::new);
+    }
+
 }
