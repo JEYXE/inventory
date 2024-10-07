@@ -1,6 +1,7 @@
 package com.fontebo.inventory.Models;
 
 import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,13 +36,15 @@ public class Movement {
     private MovementType movementType;
     private int quantity;
     private LocalDateTime movementDate;
+    private String reason;
 
 
-    public Movement(Product product, MovementType movementType,int quantity,LocalDateTime movementDate){
+    public Movement(Product product, MovementType movementType,int quantity,LocalDateTime movementDate,String reason){
         this.product=product;
         this.movementType=movementType;
         this.quantity=quantity;
         this.movementDate=movementDate;
+        this.reason=reason;
     }
    
     

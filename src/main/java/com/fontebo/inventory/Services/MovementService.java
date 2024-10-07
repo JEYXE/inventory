@@ -41,7 +41,8 @@ public class MovementService {
                 }
             }
             var date = movement.movementDate();
-            var movementcreated = new Movement(productPresent, movementType, quantity, date);
+            var reason = movement.reason();
+            var movementcreated = new Movement(productPresent, movementType, quantity, date,reason);
             movementRepository.save(movementcreated);
             return new MovementListRecord(movementcreated);
         }

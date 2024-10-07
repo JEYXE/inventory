@@ -1,17 +1,102 @@
 // scripts.js
 document.addEventListener('DOMContentLoaded', () => {
+
+    async function validarToken(token) {
+        try {
+            const response = await fetch('/validateToken', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.text();
+                return data; // Suponiendo que el backend devuelve un campo 'valido'
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error('Error validando el token:', error);
+            return null;
+        }
+    }
+    const authenticateFormContainer = document.getElementById('authenticateFormContainer');
+    const authenticate = async (event) => {
+        event.preventDefault();
+        const userName = document.getElementById('userName').value;
+        const password = document.getElementById('password').value;
+        const credencials = {
+            userName,
+            password
+        }
+        try {
+            const response = await fetch('/authenticate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(credencials)
+            });
+            if (!response.ok) {
+
+                alert('Usuario ó contraseña incorrecto');
+                throw new Error('No se logró el ingreso');
+            }
+            const tokenResponse = await response.json();
+            showSection('home');
+            menu.style.display = 'flex';
+            localStorage.token = tokenResponse.token;
+            localStorage.email = tokenResponse.userName;
+            token = localStorage.token;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    authenticateFormContainer.querySelector('form').addEventListener('submit', authenticate);
     //Funciones para la seccion productos*****************************************************************************
     // evento para mostrar secciones
     window.showSection = (sectionId) => {
         document.querySelectorAll('main section').forEach(section => {
+
             section.classList.add('hidden');
         });
         document.getElementById(sectionId).classList.remove('hidden');
+
+        if (sectionId == 'products') {
+            loadPage(currentPage);
+            productCreateFormContainer.style.display = 'none';
+            categoryCreateFormContainer.style.display = 'none';
+            document.getElementById('categoryCreateForm').reset();
+            document.getElementById('productCreateForm').reset();
+
+
+        }
+        if (sectionId == 'movimientos') {
+            movementTableLoad(movementCurrentPage);
+            document.getElementById('movementForm').reset();
+            movementFormContainer.style.display = 'none';
+
+
+        }
+        if (sectionId == 'product') {
+
+
+        }
     };
     //funcion para salir
     const logOutBtn = document.getElementById('logOutBtn');
     logOutBtn.addEventListener("click", function () {
-        alert("seguro que quiere salir");
+        var mensaje = "¿Estás seguro de que deseas salir?";
+        var opcion = confirm(mensaje);
+        if (opcion) {
+            localStorage.clear();
+            location.reload();
+        } else {
+
+        }
+
     });
     // Funcion ocultar menu
     const hideMenuBtn = document.getElementById('hideMenuBtn');
@@ -25,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const productCreateFormContainer = document.getElementById('productCreateFormContainer');
     newProductBtn.addEventListener('click', () => {
         productCreateFormContainer.style.display = 'block';
+        fetchCategorias(createProductCategory);
     });
     function filterTable() {
         const filter = document.getElementById('filterInput').value.toLowerCase();
@@ -60,10 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         obtenerFilas();
-    
+
         // Alternar el estado de ordenamiento
         sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    
+
         table.tBodies[0].append(...sortedRows);
     };
 
@@ -74,7 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPage = 0;
     let pageSize = parseInt(pageSizeSelect.value);
     function loadPage(page) {
-        fetch(`/api/products?page=${page}&size=${pageSize}`)
+        fetch(`/api/products?page=${page}&size=${pageSize}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 itemTableBody.innerHTML = '';
@@ -102,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
     }
-    loadPage(currentPage);
+
     //evento cambiar numero de productos por pagina
     pageSizeSelect.addEventListener('change', function () {
         pageSize = parseInt(this.value);
@@ -112,10 +204,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let productMovementId = 0;
     function productDetails(id) {
         productMovementId = id,
-            showSection('product');
+        showSection('product');
+        productUpdateFormContainer.style.display = 'none';
+        document.getElementById('Form').reset();
+        newCategoryUpdateProductFormContainer.style.display = 'none';
         fetchCategorias(categorySelect);
         productMovementTableLoad(productMovementCurrentPage, id);
-        fetch(`/api/products/${id}`)
+        fetch(`/api/products/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById('jsonContainer');
@@ -142,7 +243,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para obtener datos de la API y llenar el selector de categorías
     const fetchCategorias = async (categorySelect) => {
         try {
-            const response = await fetch('/api/categories');
+            const response = await fetch('/api/categories', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!response.ok) {
                 throw new Error('Error al obtener las categorías');
             }
@@ -160,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     const createProductCategory = document.getElementById('createProductCategory');
-    fetchCategorias(createProductCategory);
+
     // Función para enviar datos del formulario de productos a la API
     const createProduct = async (event) => {
         event.preventDefault();
@@ -178,7 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/products', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(producto)
             });
@@ -205,6 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelCreateProductBtn = document.getElementById('cancelCreateProductBtn');
     cancelCreateProductBtn.addEventListener('click', function () {
         productCreateFormContainer.style.display = 'none';
+        categoryCreateFormContainer.style.display = 'none';
+        document.getElementById('categoryCreateForm').reset();
         document.getElementById('productCreateForm').reset();
     });
     // evento para mostrar formulario de categoría nueva
@@ -224,7 +334,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/categories', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(categoria)
             });
@@ -257,6 +368,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const volverBoton = document.getElementById("volverBtn");
     volverBoton.addEventListener("click", function () {
         showSection('products');
+        productUpdateFormContainer.style.display = 'none';
+        document.getElementById('Form').reset();
+        newCategoryUpdateProductFormContainer.style.display = 'none';
     });
     //funcion para copiar valores en el formulario de actualizar producto
     function copyValues() {
@@ -301,7 +415,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/api/products/${id}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(producto)
             });
@@ -329,6 +444,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelUpdateProductBtn = document.getElementById('cancelUpdateProductBtn');
     cancelUpdateProductBtn.addEventListener("click", function () {
         productUpdateFormContainer.style.display = 'none';
+        document.getElementById('Form').reset();
+        newCategoryUpdateProductFormContainer.style.display = 'none';
     });
     //evento para boton nueva categoria en formulario actualizar producto
     const newCategoryUpdateProductBtn = document.getElementById('newCategoryUpdateProductBtn');
@@ -346,7 +463,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/categories', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(categoria)
             });
@@ -378,7 +496,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const options = {
             method: 'DELETE', // Método HTTP DELETE
             headers: {
-                'Content-Type': 'application/json' // Tipo de contenido
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`// Tipo de contenido
             }
         };
         fetch(`/api/products/${id}`, options)
@@ -395,10 +514,14 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Error:', error);
+                alert('El producto no se puede eliminar, ya tiene movimientos asociados');
             });
     }
     const deleteProductBtn = document.getElementById('eliminarProductoBtn');
     deleteProductBtn.addEventListener("click", function () {
+        document.getElementById('Form').reset();
+        newCategoryUpdateProductFormContainer.style.display = 'none';
+        productUpdateFormContainer.style.display = 'none';
         const id = document.getElementById('id').textContent;
         var mensaje = "¿Estás seguro de que deseas eliminar el producto?";
         var opcion = confirm(mensaje);
@@ -415,7 +538,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let productMovementCurrentPage = 0;
     let productMovementPageSize = parseInt(productMovementPageSizeSelect.value);
     function productMovementTableLoad(page, id) {
-        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}`)
+        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 productMovementTableBody.innerHTML = '';
@@ -426,6 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     row.insertCell(2).textContent = item.productName;
                     row.insertCell(3).textContent = item.quantity;
                     row.insertCell(4).textContent = item.movementType;
+                    row.insertCell(5).textContent = item.reason;
                 });
                 productMovementPaginationControls.innerHTML = '';
                 for (let i = 0; i < data.totalPages; i++) {
@@ -448,6 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const movementFormContainer = document.getElementById('movementFormContainer');
     nuevoMovimientoBtn.addEventListener('click', () => {
         movementFormContainer.style.display = 'block';
+        fetchProducts(createMovementProduct);
     });
     // funcion para traer todos los movimientos
     const movementPageSizeSelect = document.getElementById('movementPageSize');
@@ -456,7 +587,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let movementCurrentPage = 0;
     let movementPageSize = parseInt(movementPageSizeSelect.value);
     function movementTableLoad(page) {
-        fetch(`/api/movements?page=${page}&size=${movementPageSize}`)
+        fetch(`/api/movements?page=${page}&size=${movementPageSize}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 movementTableBody.innerHTML = '';
@@ -467,6 +604,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     row.insertCell(2).textContent = item.productName;
                     row.insertCell(3).textContent = item.quantity;
                     row.insertCell(4).textContent = item.movementType;
+                    row.insertCell(5).textContent = item.reason;
                 });
                 movementPaginationControls.innerHTML = '';
                 for (let i = 0; i < data.totalPages; i++) {
@@ -477,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
     }
-    movementTableLoad(movementCurrentPage);
+
     //evento cambiar numero de movimientos por pagina
     movementPageSizeSelect.addEventListener('change', function () {
         movementPageSize = parseInt(this.value);
@@ -486,7 +624,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para obtener datos de la API y llenar el selector de productos
     const fetchProducts = async (productSelect) => {
         try {
-            const response = await fetch('/api/products');
+            const response = await fetch('/api/products', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!response.ok) {
                 throw new Error('Error al obtener las categorías');
             }
@@ -504,7 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     const createMovementProduct = document.getElementById('productId');
-    fetchProducts(createMovementProduct);
+
     // evento para guardar un nuevo movimiento
     const createMovement = async (event) => {
         event.preventDefault();
@@ -512,17 +656,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const productId = document.getElementById('productId').value;
         const quantity = document.getElementById('quantity').value;
         const movementType = document.getElementById('movementType').value;
+        const reason = document.getElementById('reason').value;
         const movement = {
             movementDate,
             productId,
             quantity,
-            movementType
+            movementType,
+            reason
         };
         try {
             const response = await fetch('/api/movements', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(movement)
             });
@@ -536,6 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
             movementTableLoad(movementCurrentPage);
             document.getElementById('movementForm').reset();
             movementFormContainer.style.display = 'none';
+            alert('El movimiento se creó correctamente');
         } catch (error) {
             console.error('Error:', error);
         }
@@ -547,5 +695,22 @@ document.addEventListener('DOMContentLoaded', () => {
         movementFormContainer.style.display = 'none';
         document.getElementById('movementForm').reset();
     });
+    const menu = document.getElementById('menu');
+    let token = localStorage.getItem('token');
+    if (token) {
+        const esValido = validarToken(token);
 
+        if (esValido == null) {
+            // Redirigir a la página principal
+            showSection('authenticate');
+        } else {
+            // Redirigir al formulario de login
+            showSection('home');
+            menu.style.display = 'flex';
+        }
+    } else {
+        // Redirigir al formulario de login si no hay token
+        showSection('authenticate');
+
+    }
 });

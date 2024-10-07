@@ -1,5 +1,6 @@
 package com.fontebo.inventory.Controllers;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.fontebo.inventory.Models.User;
+import com.fontebo.inventory.Records.TokenRecord;
 import com.fontebo.inventory.Records.UserCredentialRecord;
 import com.fontebo.inventory.Services.JwtService;
 
@@ -25,7 +27,7 @@ public class AuthController {
 
 
     @PostMapping("/authenticate")
-    public ResponseEntity<String> createAuthenticationToken(@RequestBody @Valid UserCredentialRecord userCredentialRecord) throws Exception {
+    public ResponseEntity<TokenRecord> createAuthenticationToken(@RequestBody @Valid UserCredentialRecord userCredentialRecord) throws Exception {
         Authentication  authenticateUser;
         try {
             authenticateUser=authenticationManager.authenticate(
@@ -38,7 +40,14 @@ public class AuthController {
         
         final String jwt = jwtService.generarToken((User) authenticateUser.getPrincipal());
 
-        return ResponseEntity.ok(jwt);
+        return ResponseEntity.ok(new TokenRecord(jwt));
+    }
+    @GetMapping("/validateToken")
+    public String validateToken(@RequestHeader("Authorization") String token) {
+        token = token.substring(7); // Remove "Bearer " prefix
+        System.out.println(jwtService.getSubject(token));
+        System.out.println("retorno algo");
+        return jwtService.getSubject(token); // Assuming you have a way to get UserDetails
     }
 }
 

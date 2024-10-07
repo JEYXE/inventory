@@ -18,6 +18,7 @@ CREATE TABLE movements (
     movement_type ENUM('entrada', 'salida') NOT NULL,
     quantity INT NOT NULL,
     movement_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    reason TEXT NOT NULL,
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
@@ -40,9 +41,5 @@ INSERT INTO products (name, description, category, quantity, measure_unit) VALUE
 
 
 INSERT INTO users (name, email, user_password, rol) VALUES
-('Admin', 'admin@example.com', 'hashed_password', 'administrador'),
-('Usuario', 'usuario@example.com', 'hashed_password', 'usuario');
-
-INSERT INTO movements (movement_date, product_id, quantity, movement_type) VALUES
-('2024-09-26T00:00:00', 1, 10, 'entrada'),
-('2024-09-26T00:00:00', 2, 20, 'salida');
+('Admin', 'admin@example.com', '$2a$12$7evmTHfV5/I7OOzOEsuRWOAWaRsykZxiZXMoFV4vd9nNmj1NF05tO', 'administrador'),
+('Usuario', 'usuario@example.com', '$2a$12$zlUnqRf2ENoOP444IXqq/upgiiRxNsY0N6.PYKWe09D8.cPfulrRm', 'usuario');

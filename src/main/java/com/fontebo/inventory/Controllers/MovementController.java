@@ -3,6 +3,7 @@ package com.fontebo.inventory.Controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,16 +39,22 @@ public class MovementController {
     @GetMapping
     public ResponseEntity<Page<MovementListRecord>> getMovement(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(movementService.getItems(PageRequest.of(page, size)));
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "DESC") String direction) {
+                Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        return ResponseEntity.ok(movementService.getItems(PageRequest.of(page, size,sort)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Page<MovementListRecord>> getMovementByProduct(
         @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(movementService.getItemsByProduct(PageRequest.of(page, size),id));
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "DESC") String direction) {
+                Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        return ResponseEntity.ok(movementService.getItemsByProduct(PageRequest.of(page, size,sort),id));
     }
 
 }

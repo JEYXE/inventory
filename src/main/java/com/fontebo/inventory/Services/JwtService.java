@@ -34,9 +34,10 @@ public class JwtService {
         }
     }
 
+
     public String getSubject(String token) {
         if (token == null) {
-            throw new RuntimeException();
+            throw new IllegalArgumentException("El token no puede ser nulo");
         }
         DecodedJWT verifier = null;
         try {
@@ -45,15 +46,13 @@ public class JwtService {
                     .withIssuer("Fontebo")
                     .build()
                     .verify(token);
-            verifier.getSubject();
+            return verifier.getSubject();
         } catch (JWTVerificationException exception) {
-            System.out.println(exception.toString());
+            System.out.println("Error al verificar el token: " + exception.getMessage());
+            return null; // o puedes retornar un valor por defecto o manejarlo de otra manera
         }
-        if (verifier.getSubject() == null) {
-            throw new RuntimeException("Verifier invalido");
-        }
-        return verifier.getSubject();
     }
+    
 
     private Instant generarFechaExpiracion() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-05:00"));
