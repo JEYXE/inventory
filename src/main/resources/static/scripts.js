@@ -122,35 +122,88 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     document.getElementById('filterInput').addEventListener('keyup', filterTable);
-    let sortOrder = 'asc'; // Estado inicial de ordenamiento
+    let sortOrder = 'DESC'; // Estado inicial de ordenamiento
 
     window.sortTable = (columnIndex) => {
-        const table = document.getElementById('productTable');
-        const rows = Array.from(table.rows).slice(1);
-        const sortedRows = rows.sort((a, b) => {
-            const cellA = a.cells[columnIndex].innerText.toLowerCase();
-            const cellB = b.cells[columnIndex].innerText.toLowerCase();
-            if (sortOrder === 'asc') {
-                return cellA.localeCompare(cellB);
+        if (columnIndex == 0) {
+            if (sortOrder === 'DESC') {
+                sortBy = "id";
+                direction = 'DESC';
+                loadPage(currentPage);
             } else {
-                return cellB.localeCompare(cellA);
+                sortBy = "id";
+                direction = 'ASC';
+                loadPage(currentPage);
             }
-        });
 
-        function obtenerFilas() {
-            const tabla = document.getElementById('productTable');
-            const filas = tabla.getElementsByTagName('tr');
-            for (let i = 0; i < filas.length; i++) {
-                console.log(filas[i].innerText);
+        }
+        if (columnIndex == 1) {
+            if (sortOrder === 'DESC') {
+                sortBy = "name";
+                direction = 'DESC';
+                loadPage(currentPage);
+            } else {
+                sortBy = "name";
+                direction = 'ASC';
+                loadPage(currentPage);
             }
+
+        }
+        if (columnIndex == 2) {
+            if (sortOrder === 'DESC') {
+                sortBy = "description";
+                direction = 'DESC';
+                loadPage(currentPage);
+            } else {
+                sortBy = "description";
+                direction = 'ASC';
+                loadPage(currentPage);
+            }
+
+        }
+        if (columnIndex == 3) {
+            if (sortOrder === 'DESC') {
+                sortBy = "measureUnit";
+                direction = 'DESC';
+                loadPage(currentPage);
+            } else {
+                sortBy = "measureUnit";
+                direction = 'ASC';
+                loadPage(currentPage);
+            }
+
+        } 
+        if (columnIndex == 4) {
+            if (sortOrder === 'DESC') {
+                sortBy = "category";
+                direction = 'DESC';
+                loadPage(currentPage);
+            } else {
+                sortBy = "category";
+                direction = 'ASC';
+                loadPage(currentPage);
+            }
+
+        }
+        if (columnIndex == 5) {
+            if (sortOrder === 'DESC') {
+                sortBy = "quantity";
+                direction = 'DESC';
+                loadPage(currentPage);
+            } else {
+                sortBy = "quantity";
+                direction = 'ASC';
+                loadPage(currentPage);
+            }
+
         }
 
-        obtenerFilas();
+
 
         // Alternar el estado de ordenamiento
-        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
 
-        table.tBodies[0].append(...sortedRows);
+
     };
 
     // funcion para cargar productos en la tabla con paginación
@@ -159,8 +212,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const paginationControls = document.getElementById('paginationControls');
     let currentPage = 0;
     let pageSize = parseInt(pageSizeSelect.value);
+    let sortBy="id";
+    let direction='DESC';
     function loadPage(page) {
-        fetch(`/api/products?page=${page}&size=${pageSize}`, {
+        console.log(sortBy,'',direction)
+        fetch(`/api/products?page=${page}&size=${pageSize}&sortBy=${sortBy}&direction=${direction}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -204,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let productMovementId = 0;
     function productDetails(id) {
         productMovementId = id,
-        showSection('product');
+            showSection('product');
         productUpdateFormContainer.style.display = 'none';
         document.getElementById('Form').reset();
         newCategoryUpdateProductFormContainer.style.display = 'none';
