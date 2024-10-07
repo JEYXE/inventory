@@ -206,6 +206,88 @@ document.addEventListener('DOMContentLoaded', () => {
 
     };
 
+    window.sortTableMovements = (columnIndex) => {
+        if (columnIndex == 0) {
+            if (sortOrder === 'DESC') {
+                sortBy = "id";
+                direction = 'DESC';
+                movementTableLoad(movementCurrentPage)
+            } else {
+                sortBy = "id";
+                direction = 'ASC';
+                movementTableLoad(movementCurrentPage)
+            }
+
+        }
+        if (columnIndex == 1) {
+            if (sortOrder === 'DESC') {
+                sortBy = "movementDate";
+                direction = 'DESC';
+                movementTableLoad(movementCurrentPage)
+            } else {
+                sortBy = "movementDate";
+                direction = 'ASC';
+                movementTableLoad(movementCurrentPage)
+            }
+
+        }
+        if (columnIndex == 2) {
+            if (sortOrder === 'DESC') {
+                sortBy = "productName";
+                direction = 'DESC';
+                movementTableLoad(movementCurrentPage)
+            } else {
+                sortBy = "productName";
+                direction = 'ASC';
+                movementTableLoad(movementCurrentPage)
+            }
+
+        }
+        if (columnIndex == 3) {
+            if (sortOrder === 'DESC') {
+                sortBy = "quantity";
+                direction = 'DESC';
+                movementTableLoad(movementCurrentPage)
+            } else {
+                sortBy = "quantity";
+                direction = 'ASC';
+                movementTableLoad(movementCurrentPage)
+            }
+
+        } 
+        if (columnIndex == 4) {
+            if (sortOrder === 'DESC') {
+                sortBy = "movementType";
+                direction = 'DESC';
+                movementTableLoad(movementCurrentPage)
+            } else {
+                sortBy = "movementType";
+                direction = 'ASC';
+                movementTableLoad(movementCurrentPage)
+            }
+
+        }
+        if (columnIndex == 5) {
+            if (sortOrder === 'DESC') {
+                sortBy = "reason";
+                direction = 'DESC';
+                movementTableLoad(movementCurrentPage)
+            } else {
+                sortBy = "reason";
+                direction = 'ASC';
+                movementTableLoad(movementCurrentPage)
+            }
+
+        }
+
+
+
+        // Alternar el estado de ordenamiento
+        sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
+
+
+    };
+
     // funcion para cargar productos en la tabla con paginación
     const pageSizeSelect = document.getElementById('pageSize');
     const itemTableBody = document.getElementById('productTable').getElementsByTagName('tbody')[0];
@@ -594,7 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let productMovementCurrentPage = 0;
     let productMovementPageSize = parseInt(productMovementPageSizeSelect.value);
     function productMovementTableLoad(page, id) {
-        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}`, {
+        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}&sortBy=${sortBy}&direction=${direction}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -643,7 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let movementCurrentPage = 0;
     let movementPageSize = parseInt(movementPageSizeSelect.value);
     function movementTableLoad(page) {
-        fetch(`/api/movements?page=${page}&size=${movementPageSize}`, {
+        fetch(`/api/movements?page=${page}&size=${movementPageSize}&sortBy=${sortBy}&direction=${direction}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
