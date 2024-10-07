@@ -697,17 +697,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     const menu = document.getElementById('menu');
     let token = localStorage.getItem('token');
-    if (token) {
-        const esValido = validarToken(token);
-
-        if (esValido == null) {
-            // Redirigir a la página principal
-            showSection('authenticate');
-        } else {
-            // Redirigir al formulario de login
+    async function usarValidacion(token) {
+        const resultado = await validarToken(token);
+        if (resultado) {
+            console.log('Token válido:', resultado);
+            // Aquí puedes agregar la lógica que necesites cuando el token es válido
             showSection('home');
             menu.style.display = 'flex';
+        } else {
+            console.log('Token inválido o error en la validación');
+            // Aquí puedes manejar el caso de token inválido o error
+            showSection('authenticate');
         }
+    }
+
+    if (token) {
+        usarValidacion(token);
     } else {
         // Redirigir al formulario de login si no hay token
         showSection('authenticate');
