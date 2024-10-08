@@ -209,73 +209,152 @@ document.addEventListener('DOMContentLoaded', () => {
     window.sortTableMovements = (columnIndex) => {
         if (columnIndex == 0) {
             if (sortOrder === 'DESC') {
-                sortBy = "id";
+                sortByMovement = "id";
                 direction = 'DESC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             } else {
-                sortBy = "id";
+                sortByMovement = "id";
                 direction = 'ASC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             }
 
         }
         if (columnIndex == 1) {
             if (sortOrder === 'DESC') {
-                sortBy = "movementDate";
+                sortByMovement = "movementDate";
                 direction = 'DESC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             } else {
-                sortBy = "movementDate";
+                sortByMovement = "movementDate";
                 direction = 'ASC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             }
 
         }
         if (columnIndex == 2) {
             if (sortOrder === 'DESC') {
-                sortBy = "productName";
+                sortByMovement = "productName";
                 direction = 'DESC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             } else {
-                sortBy = "productName";
+                sortByMovement = "productName";
                 direction = 'ASC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             }
 
         }
         if (columnIndex == 3) {
             if (sortOrder === 'DESC') {
-                sortBy = "quantity";
+                sortByMovement = "quantity";
                 direction = 'DESC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             } else {
-                sortBy = "quantity";
+                sortByMovement = "quantity";
                 direction = 'ASC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             }
 
         } 
         if (columnIndex == 4) {
             if (sortOrder === 'DESC') {
-                sortBy = "movementType";
+                sortByMovement = "movementType";
                 direction = 'DESC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             } else {
-                sortBy = "movementType";
+                sortByMovement = "movementType";
                 direction = 'ASC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             }
 
         }
         if (columnIndex == 5) {
             if (sortOrder === 'DESC') {
-                sortBy = "reason";
+                sortByMovement = "reason";
                 direction = 'DESC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
             } else {
-                sortBy = "reason";
+                sortByMovement = "reason";
                 direction = 'ASC';
-                movementTableLoad(movementCurrentPage)
+                movementTableLoad(movementCurrentPage);
+            }
+
+        }
+               // Alternar el estado de ordenamiento
+               sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
+
+
+            };
+
+        window.sortTableMovementsProduct = (columnIndex) => {
+        if (columnIndex == 0) {
+            if (sortOrder === 'DESC') {
+                sortByMovementsProduct = "id";
+                direction = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "id";
+                direction = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+
+        }
+        if (columnIndex == 1) {
+            if (sortOrder === 'DESC') {
+                sortByMovementsProduct = "movementDate";
+                direction = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "movementDate";
+                direction = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+
+        }
+        if (columnIndex == 2) {
+            if (sortOrder === 'DESC') {
+                sortByMovementsProduct = "productName";
+                direction = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "productName";
+                direction = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+
+        }
+        if (columnIndex == 3) {
+            if (sortOrder === 'DESC') {
+                sortByMovementsProduct = "quantity";
+                direction = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "quantity";
+                direction = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+
+        } 
+        if (columnIndex == 4) {
+            if (sortOrder === 'DESC') {
+                sortByMovementsProduct = "movementType";
+                direction = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "movementType";
+                direction = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+
+        }
+        if (columnIndex == 5) {
+            if (sortOrder === 'DESC') {
+                sortByMovementsProduct = "reason";
+                direction = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "reason";
+                direction = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
             }
 
         }
@@ -307,6 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => response.json())
             .then(data => {
+                console.log(data);
                 itemTableBody.innerHTML = '';
                 data.content.forEach(item => {
                     const row = itemTableBody.insertRow();
@@ -675,8 +755,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const productMovementPaginationControls = document.getElementById('productMovementPaginationControls');
     let productMovementCurrentPage = 0;
     let productMovementPageSize = parseInt(productMovementPageSizeSelect.value);
+    let sortByMovementsProduct="id";
     function productMovementTableLoad(page, id) {
-        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}&sortBy=${sortBy}&direction=${direction}`, {
+        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}&sortBy=${sortByMovementsProduct}&direction=${direction}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -724,8 +805,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const movementPaginationControls = document.getElementById('movementPaginationControls');
     let movementCurrentPage = 0;
     let movementPageSize = parseInt(movementPageSizeSelect.value);
+    let sortByMovement="id";
     function movementTableLoad(page) {
-        fetch(`/api/movements?page=${page}&size=${movementPageSize}&sortBy=${sortBy}&direction=${direction}`, {
+        fetch(`/api/movements?page=${page}&size=${movementPageSize}&sortBy=${sortByMovement}&direction=${direction}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -775,7 +857,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const products = await response.json();
 
             productSelect.innerHTML = '';
-            products.content.forEach(product => {
+            products.forEach(product => {
                 const option = document.createElement('option');
                 option.value = product.id;
                 option.textContent = product.name;

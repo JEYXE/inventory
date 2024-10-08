@@ -1,5 +1,6 @@
 package com.fontebo.inventory.Controllers;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
@@ -24,29 +25,38 @@ import com.fontebo.inventory.Services.ProductService;
 @RequestMapping("/api/products")
 public class ProductController {
 
-
     @Autowired
     private ProductService productService;
 
     @PostMapping
-    public ResponseEntity<ProductListRecord> createProduct(@Validated @RequestBody ProductCreationRecord productCreationRecord) {
+    public ResponseEntity<ProductListRecord> createProduct(
+            @Validated @RequestBody ProductCreationRecord productCreationRecord) {
         var createdProduct = productService.createProduct(productCreationRecord);
         return ResponseEntity.ok(createdProduct);
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductListRecord>> getItems(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+    public ResponseEntity<?> getItems(
+            @RequestParam(required = false) Integer  page,
+            @RequestParam(required = false) Integer  size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "DESC") String direction) {
-                Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);    
-        return ResponseEntity.ok(productService.getItems(PageRequest.of(page, size, sort)));
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        if (page == null || size == null) {
+            // Si no se proporcionan parámetros de paginación, devolver todos los elementos
+            List<ProductListRecord> allItems = productService.getAllItems(sort);
+            return ResponseEntity.ok(allItems);
+        } else {
+            // Si se proporcionan parámetros de paginación, devolver la página solicitada
+            Page<ProductListRecord> pagedItems = productService.getItems(PageRequest.of(page, size, sort));
+            return ResponseEntity.ok(pagedItems);
+        }
+        
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductListRecord> obtenerProductoPorId(@PathVariable Long id) {
-        var producto=productService.getProductById(id);
+        var producto = productService.getProductById(id);
         return ResponseEntity.ok(producto);
     }
 
@@ -58,8 +68,10 @@ public class ProductController {
         }
         return ResponseEntity.ok().build();
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<ProductListRecord> updateProduct(@PathVariable Long id, @RequestBody ProductUpdateRecord product) {
+    public ResponseEntity<ProductListRecord> updateProduct(@PathVariable Long id,
+            @RequestBody ProductUpdateRecord product) {
         var updateProduct = productService.updateProduct(id, product);
         return ResponseEntity.ok(updateProduct);
     }

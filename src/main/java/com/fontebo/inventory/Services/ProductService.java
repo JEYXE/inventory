@@ -1,6 +1,9 @@
 package com.fontebo.inventory.Services;
 
 import java.util.Optional;
+import org.springframework.data.domain.Sort;
+import java.util.stream.Collectors;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +43,12 @@ public class ProductService {
         return productRepository.findAll(pageable).map(ProductListRecord::new);
     }
 
+    public List<ProductListRecord> getAllItems(Sort sort) {
+        return productRepository.findAll(sort).stream()
+        .map(ProductListRecord::new)
+        .collect(Collectors.toList());
+    }
+
     public ProductListRecord getProductById(Long id) {
         if (productRepository.existsById(id)) {
             Product producto = productRepository.getReferenceById(id);
@@ -61,31 +70,31 @@ public class ProductService {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
-            if(productRecord.name()!=null){
+            if (productRecord.name() != null) {
                 Optional<Product> productOptionalByName = productRepository.findByName(productRecord.name());
-                if(productOptionalByName.isPresent()&&!product.getName().equals(productRecord.name())){
+                if (productOptionalByName.isPresent() && !product.getName().equals(productRecord.name())) {
                     System.out.println(productOptional.get().getName());
                     System.out.println(productRecord.name());
                     throw new Exception("Este nombre corresponde a un producto ya existente");
                 }
                 product.setName(productRecord.name());
             }
-            if(productRecord.description()!=null){
+            if (productRecord.description() != null) {
                 product.setDescription(productRecord.description());
             }
-            if(productRecord.measureUnit()!=null){
+            if (productRecord.measureUnit() != null) {
                 product.setMeasureUnit(productRecord.measureUnit());
             }
-            if(productRecord.categoryId()!=null){
+            if (productRecord.categoryId() != null) {
                 product.setCategory(categoryRepository.findById(productRecord.categoryId()).get());
             }
 
             Product productoActualizado = productRepository.save(product);
             return new ProductListRecord(productoActualizado);
-        }else{
-        // Manejar el caso en que el producto no se encuentra
-        throw new Exception("No se encontro el producto con id: " + id);
+        } else {
+            // Manejar el caso en que el producto no se encuentra
+            throw new Exception("No se encontro el producto con id: " + id);
+        }
     }
-}
     // Otros métodos para editar y eliminar productos
 }
