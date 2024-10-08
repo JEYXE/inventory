@@ -112,18 +112,49 @@ document.addEventListener('DOMContentLoaded', () => {
         productCreateFormContainer.style.display = 'block';
         fetchCategorias(createProductCategory);
     });
-    function filterTable() {
-        const filter = document.getElementById('filterInput').value.toLowerCase();
-        const rows = document.querySelectorAll('#productTable tbody tr');
-        rows.forEach(row => {
-            const cells = Array.from(row.cells);
-            const match = cells.some(cell => cell.innerText.toLowerCase().includes(filter));
-            row.style.display = match ? '' : 'none';
-        });
-    }
-    document.getElementById('filterInput').addEventListener('keyup', filterTable);
-    let sortOrder = 'DESC'; // Estado inicial de ordenamiento
 
+    //funcion de filtado
+    const filterBtn = document.getElementById('filterBtn');
+    filterBtn.addEventListener('click', () => {
+        filterContent = document.getElementById('filterInput').value.toLowerCase();
+        loadPage(currentPage);
+    });
+    //
+    function descargarReporte() {
+        const name = document.getElementById('filterInput').value.toLowerCase();
+        const params = new URLSearchParams({ name });
+
+
+        fetch(`/api/products/reporte?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    throw new Error('Error al descargar el reporte');
+                }
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'reporte.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.addEventListener('click', () => {
+        descargarReporte();
+    });
+    // funcion de ordenamiento
+    let sortOrder = 'DESC'; // Estado inicial de ordenamiento
     window.sortTable = (columnIndex) => {
         if (columnIndex == 0) {
             if (sortOrder === 'DESC') {
@@ -172,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadPage(currentPage);
             }
 
-        } 
+        }
         if (columnIndex == 4) {
             if (sortOrder === 'DESC') {
                 sortBy = "category";
@@ -254,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 movementTableLoad(movementCurrentPage);
             }
 
-        } 
+        }
         if (columnIndex == 4) {
             if (sortOrder === 'DESC') {
                 sortByMovement = "movementType";
@@ -279,13 +310,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         }
-               // Alternar el estado de ordenamiento
-               sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
+        // Alternar el estado de ordenamiento
+        sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
 
 
-            };
+    };
 
-        window.sortTableMovementsProduct = (columnIndex) => {
+    window.sortTableMovementsProduct = (columnIndex) => {
         if (columnIndex == 0) {
             if (sortOrder === 'DESC') {
                 sortByMovementsProduct = "id";
@@ -333,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 productMovementTableLoad(productMovementCurrentPage, productMovementId);
             }
 
-        } 
+        }
         if (columnIndex == 4) {
             if (sortOrder === 'DESC') {
                 sortByMovementsProduct = "movementType";
@@ -373,11 +404,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const paginationControls = document.getElementById('paginationControls');
     let currentPage = 0;
     let pageSize = parseInt(pageSizeSelect.value);
-    let sortBy="id";
-    let direction='DESC';
+    let sortBy = "id";
+    let direction = 'DESC';
+    let filterContent = '';
     function loadPage(page) {
-        console.log(sortBy,'',direction)
-        fetch(`/api/products?page=${page}&size=${pageSize}&sortBy=${sortBy}&direction=${direction}`, {
+        console.log(sortBy, '', direction)
+        fetch(`/api/products?page=${page}&size=${pageSize}&sortBy=${sortBy}&direction=${direction}&name=${filterContent}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -755,7 +787,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const productMovementPaginationControls = document.getElementById('productMovementPaginationControls');
     let productMovementCurrentPage = 0;
     let productMovementPageSize = parseInt(productMovementPageSizeSelect.value);
-    let sortByMovementsProduct="id";
+    let sortByMovementsProduct = "id";
     function productMovementTableLoad(page, id) {
         fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}&sortBy=${sortByMovementsProduct}&direction=${direction}`, {
             method: 'GET',
@@ -799,15 +831,37 @@ document.addEventListener('DOMContentLoaded', () => {
         movementFormContainer.style.display = 'block';
         fetchProducts(createMovementProduct);
     });
+    //funcion para filtar movimientos
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    function validateMovementFilter() {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+
+        if (!startDateInput.value || !endDateInput.value) {
+            alert('Ambas fechas son obligatorias.');
+        } else if (startDate > endDate) {
+            alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
+        } else {
+            alert('xd')
+        }
+    }
+
+    const movementFilterBTn = document.getElementById('movementFilterBtn');
+    movementFilterBTn.addEventListener('click', () => {
+        validateMovementFilter();
+    });
     // funcion para traer todos los movimientos
     const movementPageSizeSelect = document.getElementById('movementPageSize');
     const movementTableBody = document.getElementById('movementTable').getElementsByTagName('tbody')[0];
     const movementPaginationControls = document.getElementById('movementPaginationControls');
     let movementCurrentPage = 0;
     let movementPageSize = parseInt(movementPageSizeSelect.value);
-    let sortByMovement="id";
+    let sortByMovement = "id";
+    let movementStartDate = "";
+    let movementEndDate = "";
     function movementTableLoad(page) {
-        fetch(`/api/movements?page=${page}&size=${movementPageSize}&sortBy=${sortByMovement}&direction=${direction}`, {
+        fetch(`/api/movements?page=${page}&size=${movementPageSize}&sortBy=${sortByMovement}&direction=${direction}&startDate=${movementStartDate}&endDate=${movementEndDate}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

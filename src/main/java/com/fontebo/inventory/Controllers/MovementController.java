@@ -20,9 +20,6 @@ import com.fontebo.inventory.Services.MovementService;
 
 import jakarta.transaction.Transactional;
 
-
-
-
 @RestController
 @RequestMapping("/api/movements")
 public class MovementController {
@@ -38,23 +35,25 @@ public class MovementController {
 
     @GetMapping
     public ResponseEntity<Page<MovementListRecord>> getMovement(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "DESC") String direction) {
-                Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
-        return ResponseEntity.ok(movementService.getItems(PageRequest.of(page, size,sort)));
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        return ResponseEntity.ok(movementService.getItems(PageRequest.of(page, size, sort),startDate,endDate));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Page<MovementListRecord>> getMovementByProduct(
-        @PathVariable Long id,
+            @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "DESC") String direction) {
-                Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
-        return ResponseEntity.ok(movementService.getItemsByProduct(PageRequest.of(page, size,sort),id));
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        return ResponseEntity.ok(movementService.getItemsByProduct(PageRequest.of(page, size, sort), id));
     }
 
 }

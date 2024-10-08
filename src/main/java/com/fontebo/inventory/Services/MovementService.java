@@ -1,7 +1,9 @@
 package com.fontebo.inventory.Services;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -10,8 +12,18 @@ import com.fontebo.inventory.Models.Movement;
 import com.fontebo.inventory.Models.Product;
 import com.fontebo.inventory.Records.MovementCreationRecord;
 import com.fontebo.inventory.Records.MovementListRecord;
+import com.fontebo.inventory.Records.ProductListRecord;
 import com.fontebo.inventory.Repositories.MovementRepository;
 import com.fontebo.inventory.Repositories.ProductRepository;
+import java.util.Map;
+import java.util.HashMap;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import java.util.stream.Collectors;
 
 @Service
 public class MovementService {
@@ -21,6 +33,9 @@ public class MovementService {
 
     @Autowired
     private ProductRepository productRepository;
+
+        @PersistenceContext
+    private EntityManager entityManager;
 
     public MovementListRecord createMovement(MovementCreationRecord movement) {
         Optional<Product> product = productRepository.findById(movement.productId());
@@ -49,8 +64,29 @@ public class MovementService {
         throw new Exception("Producto no existe en la base de datos");
     }
 
-    public Page<MovementListRecord> getItems(Pageable pageable) {
-        return movementRepository.findAll(pageable).map(MovementListRecord::new);
+    public Page<MovementListRecord> getItems(Pageable pageable, String startDate, String endDate) {
+        if(startDate==""||endDate==""){
+            return movementRepository.findAll(pageable).map(MovementListRecord::new);
+
+        }else{
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Movement> query = cb.createQuery(Movement.class);
+        Root<Movement> root = query.from(Movement.class);
+     
+        query.select(root).where(cb.between(root.get("movementDate"), startDate, endDate));
+        List<MovementListRecord> movementListRecord = entityManager.createQuery(query)
+                .getResultList()
+                .stream()
+                .map(MovementListRecord::new)
+                .collect(Collectors.toList());
+
+        int total = movementListRecord.size();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), total);
+
+        Page<MovementListRecord> page = new PageImpl<>(movementListRecord.subList(start, end), pageable, total);
+        return page;}
+        
     }
 
     public Page<MovementListRecord> getItemsByProduct(Pageable pageable, Long id) {

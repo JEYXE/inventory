@@ -12,7 +12,7 @@
 
 <body>
     <div class="container">
-        <nav id="menu"class="sidebar" style="display: none;">
+        <nav id="menu" class="sidebar" style="display: none;">
             <div class="logo">
                 <img src="logo.png" alt="Logo">
             </div>
@@ -34,11 +34,11 @@
         </nav>
         <main class="content">
             <section id="authenticate" class="hidden">
-                
+
                 <img src="logo.png" alt="Logo">
                 <h2>Bienvenido</h2>
-                <div id="authenticateFormContainer" >
-                    
+                <div id="authenticateFormContainer">
+
                     <form id="authenticateForm">
                         <label for="userName">Usuario:</label>
                         <input type="text" id="userName" name="userName" required>
@@ -55,7 +55,9 @@
             <section id="products" class="hidden">
                 <h2>Productos</h2>
                 <button id="newProductBtn">Nuevo Producto</button>
-                <input type="text" id="filterInput" placeholder="Filtrar...">
+                <input type="text" id="filterInput" placeholder="Nombre de producto">
+                <button id="filterBtn">Filtrar</button>
+                <button id="downloadBtn">Descargar</button>
                 <table id="productTable">
                     <thead>
                         <tr>
@@ -64,8 +66,8 @@
                             <th onclick="sortTable(2)">Descripción</th>
                             <th onclick="sortTable(3)">Unidad</th>
                             <th onclick="sortTable(4)">Categoría</th>
-                            <th onclick="sortTable(5)">Catidad</th>
-                            <th >Acciones</th>
+                            <th onclick="sortTable(5)">Cantidad</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,6 +118,12 @@
             <section id="movimientos" class="hidden">
                 <h2>Movimientos</h2>
                 <button id="nuevoMovimientoBtn">Nuevo Movimiento</button>
+                <label for="startDate">Fecha de Inicio:</label>
+                <input type="date" id="startDate" name="startDate" >
+                <label for="endDate">Fecha de Fin:</label>
+                <input type="date" id="endDate" name="endDate" >
+                <button id="movementFilterBtn">Filtrar</button>
+                <button id="movementDownloadBtn">Descargar</button>
                 <table id="movementTable">
                     <thead>
                         <tr>
@@ -168,6 +176,13 @@
                 <button id="volverBtn">Volver</button>
                 <button id="actualizarProductoBtn">Actualizar</button>
                 <button id="eliminarProductoBtn">Eliminar</button>
+                <label for="startDate">Fecha de Inicio:</label>
+                <input type="date" id="startDateMovementProduct" name="startDate" >
+                <label for="endDate">Fecha de Fin:</label>
+                <input type="date" id="endDateMovementProduct" name="endDate" >
+                <button id="MovementProductFilterBtn">Filtrar</button>
+                <button id="MovementProductDownloadBtn">Descargar</button>
+                <table id="movementTable">
                 <div class="json-container" id="jsonContainer"></div>
                 <table id="productMovementTable">
                     <thead>

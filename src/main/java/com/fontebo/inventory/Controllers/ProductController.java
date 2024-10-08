@@ -1,6 +1,9 @@
 package com.fontebo.inventory.Controllers;
 
+import java.io.PrintWriter;
 import java.util.List;
+import java.io.IOException;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
@@ -16,10 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fontebo.inventory.Models.Product;
 import com.fontebo.inventory.Records.ProductCreationRecord;
 import com.fontebo.inventory.Records.ProductListRecord;
 import com.fontebo.inventory.Records.ProductUpdateRecord;
 import com.fontebo.inventory.Services.ProductService;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/products")
@@ -39,6 +46,7 @@ public class ProductController {
     public ResponseEntity<?> getItems(
             @RequestParam(required = false) Integer  page,
             @RequestParam(required = false) Integer  size,
+            @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "DESC") String direction) {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
@@ -48,10 +56,24 @@ public class ProductController {
             return ResponseEntity.ok(allItems);
         } else {
             // Si se proporcionan parámetros de paginación, devolver la página solicitada
-            Page<ProductListRecord> pagedItems = productService.getItems(PageRequest.of(page, size, sort));
+            Page<ProductListRecord> pagedItems = productService.getItems(PageRequest.of(page, size, sort),name);
             return ResponseEntity.ok(pagedItems);
         }
         
+    }
+
+
+
+    @GetMapping("/reporte")
+    public void descargarReporte(HttpServletResponse response, @RequestParam Map<String, String> filtros) throws IOException {
+        List<Product> productos = productService.filtrarProductos(filtros);
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=\"reporte.csv\"");
+        PrintWriter writer = response.getWriter();
+        writer.println("Id,Nombre,Descripción,Unidad,Categoría,Catidad");
+        for (Product producto : productos) {
+            writer.println(producto.getId() + "," + producto.getName() + "," + producto.getDescription()+ "," + producto.getMeasureUnit()+ "," + producto.getCategory()+ "," + producto.getQuantity());
+        }
     }
 
     @GetMapping("/{id}")
