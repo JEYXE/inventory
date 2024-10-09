@@ -835,21 +835,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const startDateInput = document.getElementById('startDate');
     const endDateInput = document.getElementById('endDate');
     function validateMovementFilter() {
-        const startDate = new Date(startDateInput.value);
-        const endDate = new Date(endDateInput.value);
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+        if (!startDateInput.value & !endDateInput.value) {
+            movementStartDate = "";
+            movementEndDate = "";
+            movementTableLoad(movementCurrentPage);
 
-        if (!startDateInput.value || !endDateInput.value) {
+        }
+        else if (!startDateInput.value || !endDateInput.value) {
             alert('Ambas fechas son obligatorias.');
         } else if (startDate > endDate) {
             alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
         } else {
-            alert('xd')
+            movementStartDate = startDate;
+            movementEndDate = endDate;
+            movementTableLoad(movementCurrentPage);
         }
     }
 
     const movementFilterBTn = document.getElementById('movementFilterBtn');
     movementFilterBTn.addEventListener('click', () => {
         validateMovementFilter();
+    });
+
+    //
+    function MovementDownloadReport() {
+        if (!startDateInput.value & !endDateInput.value) {
+            movementStartDate = "";
+            movementEndDate = "";
+        } else {
+            movementStartDate = startDateInput.value;
+            movementEndDate = endDateInput.value;
+        }
+
+        fetch(`/api/movements/reporte?startDate=${movementStartDate}&endDate=${movementEndDate}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    throw new Error('Error al descargar el reporte');
+                }
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'reporte.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    const movementDownloadBtn = document.getElementById('movementDownloadBtn');
+    movementDownloadBtn.addEventListener('click', () => {
+        MovementDownloadReport();
     });
     // funcion para traer todos los movimientos
     const movementPageSizeSelect = document.getElementById('movementPageSize');
