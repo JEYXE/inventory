@@ -71,12 +71,14 @@ public class MovementController {
     @GetMapping("/{id}")
     public ResponseEntity<Page<MovementListRecord>> getMovementByProduct(
             @PathVariable Long id,
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "DESC") String direction) {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
-        return ResponseEntity.ok(movementService.getItemsByProduct(PageRequest.of(page, size, sort), id));
+        return ResponseEntity.ok(movementService.getItemsByProduct(PageRequest.of(page, size, sort), id, startDate, endDate));
     }
 
 }

@@ -102,8 +102,32 @@ public class MovementService {
         
     }
 
-    public Page<MovementListRecord> getItemsByProduct(Pageable pageable, Long id) {
-        return movementRepository.findByProductId(pageable,id).map(MovementListRecord::new);
+    public Page<MovementListRecord> getItemsByProduct(Pageable pageable, Long id,LocalDateTime startDate, LocalDateTime endDate) {
+        if(startDate==null||endDate==null){
+            return movementRepository.findByProductId(pageable,id).map(MovementListRecord::new);
+
+        }else{
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Movement> query = cb.createQuery(Movement.class);
+        Root<Movement> root = query.from(Movement.class);
+        query.select(root)
+        .where(cb.and(
+            cb.between(root.get("movementDate"), startDate, endDate),
+            cb.equal(root.get("id"), id)
+        ));
+        List<MovementListRecord> movementListRecord = entityManager.createQuery(query)
+                .getResultList()
+                .stream()
+                .map(MovementListRecord::new)
+                .collect(Collectors.toList());
+
+        int total = movementListRecord.size();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), total);
+
+        Page<MovementListRecord> page = new PageImpl<>(movementListRecord.subList(start, end), pageable, total);
+        return page;}
+        
     }
 
 }

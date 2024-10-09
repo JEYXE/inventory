@@ -781,6 +781,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }
     });
+    //
+    const productMovementStartDateInput = document.getElementById('startDateMovementProduct');
+    const productMovementEndDateInput = document.getElementById('endDateMovementProduct');
+    function validateProductMovementFilter() {
+        const startDate = productMovementStartDateInput.value;
+        const endDate = productMovementEndDateInput.value;
+        if (!productMovementStartDateInput.value & !productMovementEndDateInput.value) {
+            productMovementFilterStartDate = "";
+            productmovementFilterEndDate = "";
+            productMovementTableLoad(productMovementCurrentPage, productMovementId);
+
+        }
+        else if (!productMovementStartDateInput.value || !productMovementEndDateInput.value) {
+            alert('Ambas fechas son obligatorias.');
+        } else if (startDate > endDate) {
+            alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
+        } else {
+            productMovementFilterStartDate = startDate;
+            productmovementFilterEndDate = endDate;
+            productMovementTableLoad(productMovementCurrentPage, productMovementId);
+        }
+    }
+
+    const ProductMovementFilterBTn = document.getElementById('MovementProductFilterBtn');
+    ProductMovementFilterBTn.addEventListener('click', () => {
+        validateProductMovementFilter();
+    });
+
+    //
+    function productMovementDownloadReport() {
+        if (!productMovementStartDateInput.value & !productMovementEndDateInput.value) {
+            productMovementFilterStartDate = "";
+            productmovementFilterEndDate = "";
+        } else {
+            productMovementFilterStartDate = startDateInput.value;
+            productmovementFilterEndDate = endDateInput.value;
+        }
+
+        fetch(`/api/movements/reporte?startDate=${productMovementFilterStartDate}&endDate=${productmovementFilterEndDate}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    throw new Error('Error al descargar el reporte');
+                }
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'reporte.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    const productMovementDownloadBtn = document.getElementById('MovementProductDownloadBtn');
+    productMovementDownloadBtn.addEventListener('click', () => {
+        productMovementDownloadReport();
+    });
     //funcion para traer los movimientos del producto
     const productMovementPageSizeSelect = document.getElementById('productMovementPageSize');
     const productMovementTableBody = document.getElementById('productMovementTable').getElementsByTagName('tbody')[0];
@@ -788,8 +854,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let productMovementCurrentPage = 0;
     let productMovementPageSize = parseInt(productMovementPageSizeSelect.value);
     let sortByMovementsProduct = "id";
+    let productMovementFilterStartDate="";
+    let productmovementFilterEndDate="";
     function productMovementTableLoad(page, id) {
-        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}&sortBy=${sortByMovementsProduct}&direction=${direction}`, {
+        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}&sortBy=${sortByMovementsProduct}&direction=${direction}&startDate=${productMovementFilterStartDate}&endDate=${productmovementFilterEndDate}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
