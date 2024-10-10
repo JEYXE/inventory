@@ -72,7 +72,7 @@ public class ProductController {
         PrintWriter writer = response.getWriter();
         writer.println("Id,Nombre,Descripción,Unidad,Categoría,Catidad");
         for (Product producto : productos) {
-            writer.println(producto.getId() + "," + producto.getName() + "," + producto.getDescription()+ "," + producto.getMeasureUnit()+ "," + producto.getCategory()+ "," + producto.getQuantity());
+            writer.println(producto.getId() + "," + producto.getName() + "," + producto.getDescription()+ "," + producto.getMeasureUnit()+ "," + producto.getCategory().getName()+ "," + producto.getQuantity());
         }
     }
 
