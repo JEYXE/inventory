@@ -1,4 +1,5 @@
 package com.fontebo.inventory.Services;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,18 +13,15 @@ import com.fontebo.inventory.Models.Movement;
 import com.fontebo.inventory.Models.Product;
 import com.fontebo.inventory.Records.MovementCreationRecord;
 import com.fontebo.inventory.Records.MovementListRecord;
-
 import com.fontebo.inventory.Repositories.MovementRepository;
 import com.fontebo.inventory.Repositories.ProductRepository;
-import java.util.Map;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import java.util.stream.Collectors;
-import java.util.ArrayList;
 
 @Service
 public class MovementService {
@@ -34,7 +32,7 @@ public class MovementService {
     @Autowired
     private ProductRepository productRepository;
 
-        @PersistenceContext
+    @PersistenceContext
     private EntityManager entityManager;
 
     public MovementListRecord createMovement(MovementCreationRecord movement) {
@@ -57,77 +55,105 @@ public class MovementService {
             }
             var date = movement.movementDate();
             var reason = movement.reason();
-            var movementcreated = new Movement(productPresent, movementType, quantity, date,reason);
+            var movementcreated = new Movement(productPresent, movementType, quantity, date, reason);
             movementRepository.save(movementcreated);
             return new MovementListRecord(movementcreated);
         }
         throw new Exception("Producto no existe en la base de datos");
     }
 
-    public List<Movement> movementFilter( LocalDateTime startDate, LocalDateTime endDate) {
+    public List<Movement> movementFilter(LocalDateTime startDate, LocalDateTime endDate, Long id) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Movement> query = cb.createQuery(Movement.class);
         Root<Movement> root = query.from(Movement.class);
-        if(startDate==null||endDate==null){
-            query.select(root);
+        if (startDate == null || endDate == null) {
+            if(id== null){query.select(root);}
+            else{
+                Join<Movement, Product> productJoin = root.join("product");
+
+            query.select(root)
+                 .where(
+                     cb.equal(productJoin.get("id"), id)
+                 );
+
+            }
+            
+        } else {
+            if(id== null){
+                query.select(root).where(cb.between(root.get("movementDate"), startDate, endDate));
+            }
+            else{Join<Movement, Product> productJoin = root.join("product");
+
+            query.select(root)
+                 .where(cb.and(
+                     cb.between(root.get("movementDate"), startDate, endDate),
+                     cb.equal(productJoin.get("id"), id)
+                 ));}
         }
-        else{query.select(root).where(cb.between(root.get("movementDate"), startDate, endDate));}
-        
-     
+
         return entityManager.createQuery(query).getResultList();
     }
 
     public Page<MovementListRecord> getItems(Pageable pageable, LocalDateTime startDate, LocalDateTime endDate) {
-        if(startDate==null||endDate==null){
+        if (startDate == null || endDate == null) {
             return movementRepository.findAll(pageable).map(MovementListRecord::new);
 
-        }else{
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Movement> query = cb.createQuery(Movement.class);
-        Root<Movement> root = query.from(Movement.class);
-     
-        query.select(root).where(cb.between(root.get("movementDate"), startDate, endDate));
-        List<MovementListRecord> movementListRecord = entityManager.createQuery(query)
-                .getResultList()
-                .stream()
-                .map(MovementListRecord::new)
-                .collect(Collectors.toList());
+        } else {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Movement> query = cb.createQuery(Movement.class);
+            Root<Movement> root = query.from(Movement.class);
 
-        int total = movementListRecord.size();
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), total);
+            query.select(root).where(cb.between(root.get("movementDate"), startDate, endDate));
+            List<MovementListRecord> movementListRecord = entityManager.createQuery(query)
+                    .getResultList()
+                    .stream()
+                    .map(MovementListRecord::new)
+                    .collect(Collectors.toList());
 
-        Page<MovementListRecord> page = new PageImpl<>(movementListRecord.subList(start, end), pageable, total);
-        return page;}
-        
+            int total = movementListRecord.size();
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), total);
+
+            Page<MovementListRecord> page = new PageImpl<>(movementListRecord.subList(start, end), pageable, total);
+            return page;
+        }
+
     }
 
-    public Page<MovementListRecord> getItemsByProduct(Pageable pageable, Long id,LocalDateTime startDate, LocalDateTime endDate) {
-        if(startDate==null||endDate==null){
-            return movementRepository.findByProductId(pageable,id).map(MovementListRecord::new);
+    public Page<MovementListRecord> getItemsByProduct(Pageable pageable, Long id, LocalDateTime startDate,
+            LocalDateTime endDate) {
+        if (startDate == null || endDate == null) {
+            return movementRepository.findByProductId(pageable, id).map(MovementListRecord::new);
 
-        }else{
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Movement> query = cb.createQuery(Movement.class);
-        Root<Movement> root = query.from(Movement.class);
-        query.select(root)
-        .where(cb.and(
-            cb.between(root.get("movementDate"), startDate, endDate),
-            cb.equal(root.get("id"), id)
-        ));
-        List<MovementListRecord> movementListRecord = entityManager.createQuery(query)
-                .getResultList()
-                .stream()
-                .map(MovementListRecord::new)
-                .collect(Collectors.toList());
+        } else {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Movement> query = cb.createQuery(Movement.class);
+            Root<Movement> root = query.from(Movement.class);
+            System.out.println( "este es el id"+id);
+            System.out.println( "inicio"+startDate);
+            System.out.println( "inicio"+endDate);
+            Join<Movement, Product> productJoin = root.join("product");
 
-        int total = movementListRecord.size();
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), total);
+            query.select(root)
+                 .where(cb.and(
+                     cb.between(root.get("movementDate"), startDate, endDate),
+                     cb.equal(productJoin.get("id"), id)
+                 ));
+ 
+            List<MovementListRecord> movementListRecord = entityManager.createQuery(query)
+                    .getResultList()
+                    .stream()
+                    .map(MovementListRecord::new)
+                    .collect(Collectors.toList());
 
-        Page<MovementListRecord> page = new PageImpl<>(movementListRecord.subList(start, end), pageable, total);
-        return page;}
-        
+            int total = movementListRecord.size();
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), total);
+
+            Page<MovementListRecord> page = new PageImpl<>(movementListRecord.subList(start, end), pageable, total);
+            return page;
+        }
+
     }
 
 }

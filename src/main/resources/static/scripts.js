@@ -819,7 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
             productmovementFilterEndDate = endDateInput.value;
         }
 
-        fetch(`/api/movements/reporte?startDate=${productMovementFilterStartDate}&endDate=${productmovementFilterEndDate}`, {
+        fetch(`/api/movements/reporte?startDate=${productMovementFilterStartDate}&endDate=${productmovementFilterEndDate}&id=${productMovementId}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`

@@ -56,14 +56,15 @@ public class MovementController {
     @GetMapping("/reporte")
     public void descargarReporte(HttpServletResponse response,
             @RequestParam(required = false) LocalDateTime startDate,
-            @RequestParam(required = false) LocalDateTime endDate) throws IOException {
-        List<Movement> movements = movementService.movementFilter(startDate,endDate);
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(required = false) Long id) throws IOException {
+        List<Movement> movements = movementService.movementFilter(startDate,endDate,id);
         response.setContentType("text/csv");
         response.setHeader("Content-Disposition", "attachment; filename=\"reporte.csv\"");
         PrintWriter writer = response.getWriter();
         writer.println("ID,Fecha,Producto,Cantidad,Movimiento,Motivo");
         for (Movement movement : movements) {
-            writer.println(movement.getId() + "," + movement.getMovementDate() + "," + movement.getProduct() + ","
+            writer.println(movement.getId() + "," + movement.getMovementDate() + "," + movement.getProduct().getName() + ","
                     + movement.getQuantity() + "," + movement.getMovementType() + "," + movement.getReason());
         }
     }
