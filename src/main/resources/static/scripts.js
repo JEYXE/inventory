@@ -1,27 +1,7 @@
 // scripts.js
 document.addEventListener('DOMContentLoaded', () => {
-
-    async function validarToken(token) {
-        try {
-            const response = await fetch('/validateToken', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.text();
-                return data; // Suponiendo que el backend devuelve un campo 'valido'
-            } else {
-                return null;
-            }
-        } catch (error) {
-            console.error('Error validando el token:', error);
-            return null;
-        }
-    }
+    //Funciones para la sección de autenticación ************************************************************
+    //Funcion para autenticar usuario
     const authenticateFormContainer = document.getElementById('authenticateFormContainer');
     const authenticate = async (event) => {
         event.preventDefault();
@@ -40,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(credencials)
             });
             if (!response.ok) {
-
                 alert('Usuario ó contraseña incorrecto');
                 throw new Error('No se logró el ingreso');
             }
@@ -55,34 +34,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     authenticateFormContainer.querySelector('form').addEventListener('submit', authenticate);
-    //Funciones para la seccion productos*****************************************************************************
+    //Funciones para el menu principal ***********************************************************************
     // evento para mostrar secciones
     window.showSection = (sectionId) => {
         document.querySelectorAll('main section').forEach(section => {
-
             section.classList.add('hidden');
         });
         document.getElementById(sectionId).classList.remove('hidden');
-
         if (sectionId == 'products') {
             loadPage(currentPage);
             productCreateFormContainer.style.display = 'none';
             categoryCreateFormContainer.style.display = 'none';
             document.getElementById('categoryCreateForm').reset();
             document.getElementById('productCreateForm').reset();
-
-
         }
         if (sectionId == 'movimientos') {
             movementTableLoad(movementCurrentPage);
             document.getElementById('movementForm').reset();
             movementFormContainer.style.display = 'none';
-
-
         }
         if (sectionId == 'product') {
-
-
         }
     };
     //funcion para salir
@@ -94,15 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.clear();
             location.reload();
         } else {
-
         }
-
     });
     // Funcion ocultar menu
     const hideMenuBtn = document.getElementById('hideMenuBtn');
     const sidebar = document.querySelector('.sidebar');
     hideMenuBtn.addEventListener("click", function () {
         sidebar.classList.toggle('collapsed');
+        hideMenuBtn.classList.toggle('rotate');
     });
     //Funciones para la seccion productos***************************************************************************
     //evento para mostrar formulario de nuevo producto
@@ -112,19 +82,27 @@ document.addEventListener('DOMContentLoaded', () => {
         productCreateFormContainer.style.display = 'block';
         fetchCategorias(createProductCategory);
     });
-
-    //funcion de filtado
+    //funcion de filtado de productos
     const filterBtn = document.getElementById('filterBtn');
     filterBtn.addEventListener('click', () => {
         filterContent = document.getElementById('filterInput').value.toLowerCase();
         loadPage(currentPage);
+        filterBtn.style.display = 'none';
+        cancelFilterBtn.style.display = 'inline';
     });
-    //
+    //funcion de filtado de productos
+    const cancelFilterBtn = document.getElementById('cancelFilterBtn');
+    cancelFilterBtn.addEventListener('click', () => {
+        filterContent = '';
+        loadPage(currentPage);
+        filterBtn.style.display = 'inline';
+        cancelFilterBtn.style.display = 'none';
+        document.getElementById('filterInput').value = '';
+    });
+    //Función para descargar reporte de productos
     function descargarReporte() {
         const name = document.getElementById('filterInput').value.toLowerCase();
         const params = new URLSearchParams({ name });
-
-
         fetch(`/api/products/reporte?${params.toString()}`, {
             method: 'GET',
             headers: {
@@ -153,8 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadBtn.addEventListener('click', () => {
         descargarReporte();
     });
-    // funcion de ordenamiento
-    let sortOrder = 'DESC'; // Estado inicial de ordenamiento
+    // funcion de ordenamiento tabla productos
+    let sortOrder = 'DESC';
     window.sortTable = (columnIndex) => {
         if (columnIndex == 0) {
             if (sortOrder === 'DESC') {
@@ -166,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 direction = 'ASC';
                 loadPage(currentPage);
             }
-
         }
         if (columnIndex == 1) {
             if (sortOrder === 'DESC') {
@@ -178,7 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 direction = 'ASC';
                 loadPage(currentPage);
             }
-
         }
         if (columnIndex == 2) {
             if (sortOrder === 'DESC') {
@@ -190,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 direction = 'ASC';
                 loadPage(currentPage);
             }
-
         }
         if (columnIndex == 3) {
             if (sortOrder === 'DESC') {
@@ -202,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 direction = 'ASC';
                 loadPage(currentPage);
             }
-
         }
         if (columnIndex == 4) {
             if (sortOrder === 'DESC') {
@@ -214,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 direction = 'ASC';
                 loadPage(currentPage);
             }
-
         }
         if (columnIndex == 5) {
             if (sortOrder === 'DESC') {
@@ -226,178 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 direction = 'ASC';
                 loadPage(currentPage);
             }
-
         }
-
-
-
-        // Alternar el estado de ordenamiento
         sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
-
-
     };
-
-    window.sortTableMovements = (columnIndex) => {
-        if (columnIndex == 0) {
-            if (sortOrder === 'DESC') {
-                sortByMovement = "id";
-                direction = 'DESC';
-                movementTableLoad(movementCurrentPage);
-            } else {
-                sortByMovement = "id";
-                direction = 'ASC';
-                movementTableLoad(movementCurrentPage);
-            }
-
-        }
-        if (columnIndex == 1) {
-            if (sortOrder === 'DESC') {
-                sortByMovement = "movementDate";
-                direction = 'DESC';
-                movementTableLoad(movementCurrentPage);
-            } else {
-                sortByMovement = "movementDate";
-                direction = 'ASC';
-                movementTableLoad(movementCurrentPage);
-            }
-
-        }
-        if (columnIndex == 2) {
-            if (sortOrder === 'DESC') {
-                sortByMovement = "productName";
-                direction = 'DESC';
-                movementTableLoad(movementCurrentPage);
-            } else {
-                sortByMovement = "productName";
-                direction = 'ASC';
-                movementTableLoad(movementCurrentPage);
-            }
-
-        }
-        if (columnIndex == 3) {
-            if (sortOrder === 'DESC') {
-                sortByMovement = "quantity";
-                direction = 'DESC';
-                movementTableLoad(movementCurrentPage);
-            } else {
-                sortByMovement = "quantity";
-                direction = 'ASC';
-                movementTableLoad(movementCurrentPage);
-            }
-
-        }
-        if (columnIndex == 4) {
-            if (sortOrder === 'DESC') {
-                sortByMovement = "movementType";
-                direction = 'DESC';
-                movementTableLoad(movementCurrentPage);
-            } else {
-                sortByMovement = "movementType";
-                direction = 'ASC';
-                movementTableLoad(movementCurrentPage);
-            }
-
-        }
-        if (columnIndex == 5) {
-            if (sortOrder === 'DESC') {
-                sortByMovement = "reason";
-                direction = 'DESC';
-                movementTableLoad(movementCurrentPage);
-            } else {
-                sortByMovement = "reason";
-                direction = 'ASC';
-                movementTableLoad(movementCurrentPage);
-            }
-
-        }
-        // Alternar el estado de ordenamiento
-        sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
-
-
-    };
-
-    window.sortTableMovementsProduct = (columnIndex) => {
-        if (columnIndex == 0) {
-            if (sortOrder === 'DESC') {
-                sortByMovementsProduct = "id";
-                direction = 'DESC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            } else {
-                sortByMovementsProduct = "id";
-                direction = 'ASC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            }
-
-        }
-        if (columnIndex == 1) {
-            if (sortOrder === 'DESC') {
-                sortByMovementsProduct = "movementDate";
-                direction = 'DESC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            } else {
-                sortByMovementsProduct = "movementDate";
-                direction = 'ASC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            }
-
-        }
-        if (columnIndex == 2) {
-            if (sortOrder === 'DESC') {
-                sortByMovementsProduct = "productName";
-                direction = 'DESC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            } else {
-                sortByMovementsProduct = "productName";
-                direction = 'ASC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            }
-
-        }
-        if (columnIndex == 3) {
-            if (sortOrder === 'DESC') {
-                sortByMovementsProduct = "quantity";
-                direction = 'DESC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            } else {
-                sortByMovementsProduct = "quantity";
-                direction = 'ASC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            }
-
-        }
-        if (columnIndex == 4) {
-            if (sortOrder === 'DESC') {
-                sortByMovementsProduct = "movementType";
-                direction = 'DESC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            } else {
-                sortByMovementsProduct = "movementType";
-                direction = 'ASC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            }
-
-        }
-        if (columnIndex == 5) {
-            if (sortOrder === 'DESC') {
-                sortByMovementsProduct = "reason";
-                direction = 'DESC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            } else {
-                sortByMovementsProduct = "reason";
-                direction = 'ASC';
-                productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            }
-
-        }
-
-
-
-        // Alternar el estado de ordenamiento
-        sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
-
-
-    };
-
     // funcion para cargar productos en la tabla con paginación
     const pageSizeSelect = document.getElementById('pageSize');
     const itemTableBody = document.getElementById('productTable').getElementsByTagName('tbody')[0];
@@ -444,53 +248,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
     }
-
     //evento cambiar numero de productos por pagina
     pageSizeSelect.addEventListener('change', function () {
         pageSize = parseInt(this.value);
         loadPage(0);
     });
-    //funcion para traer el el detalle del producto desde el icono de la tabla
-    let productMovementId = 0;
-    function productDetails(id) {
-        productMovementId = id,
-            showSection('product');
-        productUpdateFormContainer.style.display = 'none';
-        document.getElementById('Form').reset();
-        newCategoryUpdateProductFormContainer.style.display = 'none';
-        fetchCategorias(categorySelect);
-        productMovementTableLoad(productMovementCurrentPage, id);
-        fetch(`/api/products/${id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('jsonContainer');
-                container.innerHTML = '';
-                for (const key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        const item = document.createElement('div');
-                        item.className = 'json-item';
-                        const keyElement = document.createElement('div');
-                        keyElement.className = 'json-key';
-                        keyElement.textContent = key;
-                        const valueElement = document.createElement('div');
-                        valueElement.id = key;
-                        valueElement.textContent = data[key];
-                        item.appendChild(keyElement);
-                        item.appendChild(valueElement);
-                        container.appendChild(item);
-                    }
-                }
-
-            });
-    }
-    //Funciones para crear un producto******************************************************************************
+    //Funciones para el formulario de creación de de productos
     // Función para obtener datos de la API y llenar el selector de categorías
+    const createProductCategory = document.getElementById('createProductCategory');
     const fetchCategorias = async (categorySelect) => {
         try {
             const response = await fetch('/api/categories', {
@@ -504,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Error al obtener las categorías');
             }
             const categorias = await response.json();
-
             categorySelect.innerHTML = '';
             categorias.forEach(categoria => {
                 const option = document.createElement('option');
@@ -516,8 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error:', error);
         }
     };
-    const createProductCategory = document.getElementById('createProductCategory');
-
     // Función para enviar datos del formulario de productos a la API
     const createProduct = async (event) => {
         event.preventDefault();
@@ -548,16 +310,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const nuevoProducto = await response.json();
             console.log('Producto creado:', nuevoProducto);
             alert('Producto creado satisfactoriamente')
-            // Actualizar la tabla de productos
             loadPage(currentPage);
-            // Ocultar el formulario
             document.getElementById('productCreateForm').reset();
             productCreateFormContainer.style.display = 'none';
         } catch (error) {
             console.error('Error:', error);
         }
     };
-    //evento de envío al formulario de productos
     productCreateFormContainer.querySelector('form').addEventListener('submit', createProduct);
     //evento para ocultar formulario de nuevo producto
     const cancelCreateProductBtn = document.getElementById('cancelCreateProductBtn');
@@ -604,7 +363,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error:', error);
         }
     };
-    //evento de envío al formulario de categorias
     categoryCreateFormContainer.querySelector('form').addEventListener('submit', createCategory);
     //evento para ocultar formulario de nueva categoria
     const cancelNewCategoryBtn = document.getElementById('cancelNewCategoryBtn');
@@ -612,8 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
         categoryCreateFormContainer.style.display = 'none';
         document.getElementById('categoryCreateForm').reset();
     });
-    //Funciones para la vista de producto***************************************************************************
-    const categorySelect = document.getElementById('categorySelect');
+    //Funciones para la sección de detalle de producto***************************************************************************
     //evento para el boton de volver
     const volverBoton = document.getElementById("volverBtn");
     volverBoton.addEventListener("click", function () {
@@ -622,124 +379,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('Form').reset();
         newCategoryUpdateProductFormContainer.style.display = 'none';
     });
-    //funcion para copiar valores en el formulario de actualizar producto
-    function copyValues() {
-        // Obtener valores de los elementos de origen
-        const productName = document.getElementById('name').textContent;
-        const productDescription = document.getElementById('description').textContent;
-        const productCategory = document.getElementById('category').textContent;
-        const productMeasureUnit = document.getElementById('measureUnit').textContent;
-        // Asignar valores a los elementos de destino
-        document.getElementById('updateNombre').value = productName;
-        document.getElementById('updateDescription').value = productDescription;
-        for (let i = 0; i < document.getElementById('categorySelect').options.length; i++) {
-            if (document.getElementById('categorySelect').options[i].textContent === productCategory) {
-                document.getElementById('categorySelect').value = document.getElementById('categorySelect').options[i].value;
-                break;
-            }
-        }
-        document.getElementById('updateMeasureUnit').value = productMeasureUnit;
-    }
     //evento para boton actualizar
     const productUpdateFormContainer = document.getElementById('productUpdateFormContainer');
     const updateProductBtn = document.getElementById('actualizarProductoBtn');
     updateProductBtn.addEventListener("click", function () {
         productUpdateFormContainer.style.display = 'block';
         copyValues();
-    });
-    //funsion para actualizar producto
-    const productUpdate = async (event) => {
-        event.preventDefault();
-        const id = document.getElementById('id').textContent;
-        const name = document.getElementById('updateNombre').value;
-        const description = document.getElementById('updateDescription').value;
-        const measureUnit = document.getElementById('updateMeasureUnit').value;
-        const categoryId = document.getElementById('categorySelect').value;
-        const producto = {
-            name,
-            description,
-            measureUnit,
-            categoryId
-        };
-        try {
-            const response = await fetch(`/api/products/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(producto)
-            });
-
-            if (!response.ok) {
-                const rspuesta = await response.json();
-                alert(rspuesta.name);
-                throw new Error('Error al crear el producto');
-            }
-
-            const nuevoProducto = await response.json();
-            console.log('Producto creado:', nuevoProducto);
-            alert('Producto actualizado satisfactoriamente')
-            // Actualizar la tabla de productos
-            loadPage(currentPage);
-            productDetails(id);
-            // Ocultar el formulario
-            productUpdateFormContainer.style.display = 'none';
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-    productUpdateFormContainer.querySelector('form').addEventListener('submit', productUpdate);
-    //evento para boton cancelar actualizar producto
-    const cancelUpdateProductBtn = document.getElementById('cancelUpdateProductBtn');
-    cancelUpdateProductBtn.addEventListener("click", function () {
-        productUpdateFormContainer.style.display = 'none';
-        document.getElementById('Form').reset();
-        newCategoryUpdateProductFormContainer.style.display = 'none';
-    });
-    //evento para boton nueva categoria en formulario actualizar producto
-    const newCategoryUpdateProductBtn = document.getElementById('newCategoryUpdateProductBtn');
-    const newCategoryUpdateProductFormContainer = document.getElementById('newCategoryUpdateProductFormContainer');
-    newCategoryUpdateProductBtn.addEventListener("click", function () {
-        newCategoryUpdateProductFormContainer.style.display = 'block';
-    });
-    const createCategory2 = async (event) => {
-        event.preventDefault();
-        const name = document.getElementById('newCategoryNameUpdateProductForm').value;
-        const categoria = {
-            name
-        };
-        try {
-            const response = await fetch('/api/categories', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(categoria)
-            });
-            if (!response.ok) {
-                const respuesta = await response.json();
-                alert(respuesta.name);
-                throw new Error('Error al crear la categoria');
-            }
-            const nuevoCategoria = await response.json();
-            console.log('Producto creado:', nuevoCategoria);
-            alert('Categoría creada satisfactoriamente')
-            fetchCategorias(categorySelect);
-            document.getElementById('Form').reset();
-            newCategoryUpdateProductFormContainer.style.display = 'none';
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-    //evento de envío al formulario de categorias
-    newCategoryUpdateProductFormContainer.querySelector('form').addEventListener('submit', createCategory2);
-    //evento para ocultar formulario de nueva categoria
-    const cancelarNuevaCategoriaBtn = document.getElementById('cancelarNuevaCategoriaBtn');
-    cancelarNuevaCategoriaBtn.addEventListener('click', function () {
-        newCategoryUpdateProductFormContainer.style.display = 'none';
-        document.getElementById('Form').reset();
     });
     //funcion para eliminar producto
     function deleteProducto(id) {
@@ -778,10 +423,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (opcion) {
             deleteProducto(id);
         } else {
-
         }
     });
-    //
+    //Funcion para filtrar tabla de movimientos por producto
     const productMovementStartDateInput = document.getElementById('startDateMovementProduct');
     const productMovementEndDateInput = document.getElementById('endDateMovementProduct');
     function validateProductMovementFilter() {
@@ -791,7 +435,6 @@ document.addEventListener('DOMContentLoaded', () => {
             productMovementFilterStartDate = "";
             productmovementFilterEndDate = "";
             productMovementTableLoad(productMovementCurrentPage, productMovementId);
-
         }
         else if (!productMovementStartDateInput.value || !productMovementEndDateInput.value) {
             alert('Ambas fechas son obligatorias.');
@@ -801,15 +444,24 @@ document.addEventListener('DOMContentLoaded', () => {
             productMovementFilterStartDate = startDate;
             productmovementFilterEndDate = endDate;
             productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            ProductMovementFilterBTn.style.display='none';
+            cancelMovementProductFilterBtn.style.display='inline'
         }
     }
-
     const ProductMovementFilterBTn = document.getElementById('MovementProductFilterBtn');
     ProductMovementFilterBTn.addEventListener('click', () => {
         validateProductMovementFilter();
     });
-
-    //
+    //funcion para quitar filtro
+    const cancelMovementProductFilterBtn = document.getElementById('cancelMovementProductFilterBtn');
+    cancelMovementProductFilterBtn.addEventListener('click', () => {
+        productMovementStartDateInput.value='';
+        productMovementEndDateInput.value='';
+        validateProductMovementFilter();
+                    ProductMovementFilterBTn.style.display='inline';
+            cancelMovementProductFilterBtn.style.display='none'
+    });
+    //Función para descargar reporte de movimientos por producto
     function productMovementDownloadReport() {
         if (!productMovementStartDateInput.value & !productMovementEndDateInput.value) {
             productMovementFilterStartDate = "";
@@ -818,7 +470,6 @@ document.addEventListener('DOMContentLoaded', () => {
             productMovementFilterStartDate = startDateInput.value;
             productmovementFilterEndDate = endDateInput.value;
         }
-
         fetch(`/api/movements/reporte?startDate=${productMovementFilterStartDate}&endDate=${productmovementFilterEndDate}&id=${productMovementId}`, {
             method: 'GET',
             headers: {
@@ -847,6 +498,116 @@ document.addEventListener('DOMContentLoaded', () => {
     productMovementDownloadBtn.addEventListener('click', () => {
         productMovementDownloadReport();
     });
+    //funcion para traer el el detalle del producto desde el icono de la tabla
+    const categorySelect = document.getElementById('categorySelect');
+    let productMovementId = 0;
+    function productDetails(id) {
+        productMovementId = id;
+        showSection('product');
+        productUpdateFormContainer.style.display = 'none';
+        document.getElementById('Form').reset();
+        newCategoryUpdateProductFormContainer.style.display = 'none';
+        fetchCategorias(categorySelect);
+        productMovementTableLoad(productMovementCurrentPage, id);
+        fetch(`/api/products/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('jsonContainer');
+                container.innerHTML = '';
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const item = document.createElement('div');
+                        item.className = 'json-item';
+                        const keyElement = document.createElement('div');
+                        keyElement.className = 'json-key';
+                        keyElement.textContent = key;
+                        const valueElement = document.createElement('div');
+                        valueElement.id = key;
+                        valueElement.textContent = data[key];
+                        item.appendChild(keyElement);
+                        item.appendChild(valueElement);
+                        container.appendChild(item);
+                    }
+                }
+            });
+    }
+    //Función para ordenar tabla de movimientos por producto
+    let sortOrderProductMovement = 'DESC';
+    window.sortTableMovementsProduct = (columnIndex) => {
+        if (columnIndex == 0) {
+            if (sortOrderProductMovement === 'DESC') {
+                sortByMovementsProduct = "id";
+                directionMovementProduct = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "id";
+                directionMovementProduct = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+        }
+        if (columnIndex == 1) {
+            if (sortOrderProductMovement === 'DESC') {
+                sortByMovementsProduct = "movementDate";
+                directionMovementProduct = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "movementDate";
+                directionMovementProduct = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+        }
+        if (columnIndex == 2) {
+            if (sortOrderProductMovement === 'DESC') {
+                sortByMovementsProduct = "productName";
+                directionMovementProduct = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "productName";
+                directionMovementProduct = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+        }
+        if (columnIndex == 3) {
+            if (sortOrderProductMovement === 'DESC') {
+                sortByMovementsProduct = "quantity";
+                directionMovementProduct = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "quantity";
+                directionMovementProduct = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+        }
+        if (columnIndex == 4) {
+            if (sortOrderProductMovement === 'DESC') {
+                sortByMovementsProduct = "movementType";
+                directionMovementProduct = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "movementType";
+                directionMovementProduct = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+        }
+        if (columnIndex == 5) {
+            if (sortOrderProductMovement === 'DESC') {
+                sortByMovementsProduct = "reason";
+                directionMovementProduct = 'DESC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            } else {
+                sortByMovementsProduct = "reason";
+                directionMovementProduct = 'ASC';
+                productMovementTableLoad(productMovementCurrentPage, productMovementId);
+            }
+        }
+        sortOrderProductMovement = sortOrderProductMovement === 'ASC' ? 'DESC' : 'ASC';
+    };
     //funcion para traer los movimientos del producto
     const productMovementPageSizeSelect = document.getElementById('productMovementPageSize');
     const productMovementTableBody = document.getElementById('productMovementTable').getElementsByTagName('tbody')[0];
@@ -854,10 +615,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let productMovementCurrentPage = 0;
     let productMovementPageSize = parseInt(productMovementPageSizeSelect.value);
     let sortByMovementsProduct = "id";
-    let productMovementFilterStartDate="";
-    let productmovementFilterEndDate="";
+    let productMovementFilterStartDate = "";
+    let productmovementFilterEndDate = "";
+    let directionMovementProduct = 'DESC';
     function productMovementTableLoad(page, id) {
-        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}&sortBy=${sortByMovementsProduct}&direction=${direction}&startDate=${productMovementFilterStartDate}&endDate=${productmovementFilterEndDate}`, {
+        fetch(`/api/movements/${id}?page=${page}&size=${productMovementPageSize}&sortBy=${sortByMovementsProduct}&direction=${directionMovementProduct}&startDate=${productMovementFilterStartDate}&endDate=${productmovementFilterEndDate}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -890,8 +652,114 @@ document.addEventListener('DOMContentLoaded', () => {
         productMovementPageSize = parseInt(this.value);
         productMovementTableLoad(0, productMovementId);
     });
-
-    //funciones para movimientos***********************************************************************************
+    //Funciones para el formulario de actualizar producto
+    //funcion para copiar valores en el formulario de actualizar producto
+    function copyValues() {
+        const productName = document.getElementById('name').textContent;
+        const productDescription = document.getElementById('description').textContent;
+        const productCategory = document.getElementById('category').textContent;
+        const productMeasureUnit = document.getElementById('measureUnit').textContent;
+        document.getElementById('updateNombre').value = productName;
+        document.getElementById('updateDescription').value = productDescription;
+        for (let i = 0; i < document.getElementById('categorySelect').options.length; i++) {
+            if (document.getElementById('categorySelect').options[i].textContent === productCategory) {
+                document.getElementById('categorySelect').value = document.getElementById('categorySelect').options[i].value;
+                break;
+            }
+        }
+        document.getElementById('updateMeasureUnit').value = productMeasureUnit;
+    }
+    //funsion para actualizar producto
+    const productUpdate = async (event) => {
+        event.preventDefault();
+        const id = document.getElementById('id').textContent;
+        const name = document.getElementById('updateNombre').value;
+        const description = document.getElementById('updateDescription').value;
+        const measureUnit = document.getElementById('updateMeasureUnit').value;
+        const categoryId = document.getElementById('categorySelect').value;
+        const producto = {
+            name,
+            description,
+            measureUnit,
+            categoryId
+        };
+        try {
+            const response = await fetch(`/api/products/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(producto)
+            });
+            if (!response.ok) {
+                const rspuesta = await response.json();
+                alert(rspuesta.name);
+                throw new Error('Error al crear el producto');
+            }
+            const nuevoProducto = await response.json();
+            console.log('Producto creado:', nuevoProducto);
+            alert('Producto actualizado satisfactoriamente')
+            loadPage(currentPage);
+            productDetails(id);
+            productUpdateFormContainer.style.display = 'none';
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    productUpdateFormContainer.querySelector('form').addEventListener('submit', productUpdate);
+    //evento para boton cancelar actualizar producto
+    const cancelUpdateProductBtn = document.getElementById('cancelUpdateProductBtn');
+    cancelUpdateProductBtn.addEventListener("click", function () {
+        productUpdateFormContainer.style.display = 'none';
+        document.getElementById('Form').reset();
+        newCategoryUpdateProductFormContainer.style.display = 'none';
+    });
+    //evento para boton nueva categoria en formulario actualizar producto
+    const newCategoryUpdateProductBtn = document.getElementById('newCategoryUpdateProductBtn');
+    const newCategoryUpdateProductFormContainer = document.getElementById('newCategoryUpdateProductFormContainer');
+    newCategoryUpdateProductBtn.addEventListener("click", function () {
+        newCategoryUpdateProductFormContainer.style.display = 'block';
+    });
+    //evento de envío al formulario de nueva categoria en formulario actualizar producto
+    const createCategory2 = async (event) => {
+        event.preventDefault();
+        const name = document.getElementById('newCategoryNameUpdateProductForm').value;
+        const categoria = {
+            name
+        };
+        try {
+            const response = await fetch('/api/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(categoria)
+            });
+            if (!response.ok) {
+                const respuesta = await response.json();
+                alert(respuesta.name);
+                throw new Error('Error al crear la categoria');
+            }
+            const nuevoCategoria = await response.json();
+            console.log('Producto creado:', nuevoCategoria);
+            alert('Categoría creada satisfactoriamente')
+            fetchCategorias(categorySelect);
+            document.getElementById('Form').reset();
+            newCategoryUpdateProductFormContainer.style.display = 'none';
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    newCategoryUpdateProductFormContainer.querySelector('form').addEventListener('submit', createCategory2);
+    //evento para ocultar formulario de nueva categoria
+    const cancelarNuevaCategoriaBtn = document.getElementById('cancelarNuevaCategoriaBtn');
+    cancelarNuevaCategoriaBtn.addEventListener('click', function () {
+        newCategoryUpdateProductFormContainer.style.display = 'none';
+        document.getElementById('Form').reset();
+    });
+    //funciones para sección movimientos***********************************************************************************
     // evento para mostrar formulario de nuevo movimiento
     const nuevoMovimientoBtn = document.getElementById('nuevoMovimientoBtn');
     const movementFormContainer = document.getElementById('movementFormContainer');
@@ -909,7 +777,6 @@ document.addEventListener('DOMContentLoaded', () => {
             movementStartDate = "";
             movementEndDate = "";
             movementTableLoad(movementCurrentPage);
-
         }
         else if (!startDateInput.value || !endDateInput.value) {
             alert('Ambas fechas son obligatorias.');
@@ -919,15 +786,26 @@ document.addEventListener('DOMContentLoaded', () => {
             movementStartDate = startDate;
             movementEndDate = endDate;
             movementTableLoad(movementCurrentPage);
+            movementFilterBTn.style.display = 'none';
+            cancelMovementFilterBtn.style.display = 'inline'
+
         }
     }
-
     const movementFilterBTn = document.getElementById('movementFilterBtn');
     movementFilterBTn.addEventListener('click', () => {
         validateMovementFilter();
-    });
 
-    //
+    });
+    //funcion para cancelar filtro
+    const cancelMovementFilterBtn = document.getElementById('cancelMovementFilterBtn');
+    cancelMovementFilterBtn.addEventListener('click', () => {
+        startDateInput.value = '';
+        endDateInput.value = '';
+        validateMovementFilter();
+        movementFilterBTn.style.display = 'inline';
+        cancelMovementFilterBtn.style.display = 'none'
+    });
+    // función para descargar reporte de movimientos
     function MovementDownloadReport() {
         if (!startDateInput.value & !endDateInput.value) {
             movementStartDate = "";
@@ -936,7 +814,6 @@ document.addEventListener('DOMContentLoaded', () => {
             movementStartDate = startDateInput.value;
             movementEndDate = endDateInput.value;
         }
-
         fetch(`/api/movements/reporte?startDate=${movementStartDate}&endDate=${movementEndDate}`, {
             method: 'GET',
             headers: {
@@ -965,6 +842,77 @@ document.addEventListener('DOMContentLoaded', () => {
     movementDownloadBtn.addEventListener('click', () => {
         MovementDownloadReport();
     });
+    //Fución para ordenar tabla de movimientos
+    let sortOrderMovements = 'DESC';
+    window.sortTableMovements = (columnIndex) => {
+        if (columnIndex == 0) {
+            if (sortOrderMovements === 'DESC') {
+                sortByMovement = "id";
+                directionMovement = 'DESC';
+                movementTableLoad(movementCurrentPage);
+            } else {
+                sortOrderMovements = "id";
+                directionMovement = 'ASC';
+                movementTableLoad(movementCurrentPage);
+            }
+        }
+        if (columnIndex == 1) {
+            if (sortOrderMovements === 'DESC') {
+                sortByMovement = "movementDate";
+                directionMovement = 'DESC';
+                movementTableLoad(movementCurrentPage);
+            } else {
+                sortByMovement = "movementDate";
+                directionMovement = 'ASC';
+                movementTableLoad(movementCurrentPage);
+            }
+        }
+        if (columnIndex == 2) {
+            if (sortOrderMovements === 'DESC') {
+                sortByMovement = "productName";
+                directionMovement = 'DESC';
+                movementTableLoad(movementCurrentPage);
+            } else {
+                sortByMovement = "productName";
+                directionMovement = 'ASC';
+                movementTableLoad(movementCurrentPage);
+            }
+        }
+        if (columnIndex == 3) {
+            if (sortOrderMovements === 'DESC') {
+                sortByMovement = "quantity";
+                directionMovement = 'DESC';
+                movementTableLoad(movementCurrentPage);
+            } else {
+                sortByMovement = "quantity";
+                directionMovement = 'ASC';
+                movementTableLoad(movementCurrentPage);
+            }
+        }
+        if (columnIndex == 4) {
+            if (sortOrderMovements === 'DESC') {
+                sortByMovement = "movementType";
+                directionMovement = 'DESC';
+                movementTableLoad(movementCurrentPage);
+            } else {
+                sortByMovement = "movementType";
+                directionMovement = 'ASC';
+                movementTableLoad(movementCurrentPage);
+            }
+        }
+        if (columnIndex == 5) {
+            if (sortOrderMovements === 'DESC') {
+                sortByMovement = "reason";
+                directionMovement = 'DESC';
+                movementTableLoad(movementCurrentPage);
+            } else {
+                sortByMovement = "reason";
+                directionMovement = 'ASC';
+                movementTableLoad(movementCurrentPage);
+            }
+        }
+        sortOrderMovements = sortOrderMovements === 'ASC' ? 'DESC' : 'ASC';
+    };
     // funcion para traer todos los movimientos
     const movementPageSizeSelect = document.getElementById('movementPageSize');
     const movementTableBody = document.getElementById('movementTable').getElementsByTagName('tbody')[0];
@@ -974,8 +922,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let sortByMovement = "id";
     let movementStartDate = "";
     let movementEndDate = "";
+    let directionMovement = 'DESC';
     function movementTableLoad(page) {
-        fetch(`/api/movements?page=${page}&size=${movementPageSize}&sortBy=${sortByMovement}&direction=${direction}&startDate=${movementStartDate}&endDate=${movementEndDate}`, {
+        fetch(`/api/movements?page=${page}&size=${movementPageSize}&sortBy=${sortByMovement}&direction=${directionMovement}&startDate=${movementStartDate}&endDate=${movementEndDate}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -1003,7 +952,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
     }
-
     //evento cambiar numero de movimientos por pagina
     movementPageSizeSelect.addEventListener('change', function () {
         movementPageSize = parseInt(this.value);
@@ -1023,7 +971,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Error al obtener las categorías');
             }
             const products = await response.json();
-
             productSelect.innerHTML = '';
             products.forEach(product => {
                 const option = document.createElement('option');
@@ -1036,7 +983,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     const createMovementProduct = document.getElementById('productId');
-
     // evento para guardar un nuevo movimiento
     const createMovement = async (event) => {
         event.preventDefault();
@@ -1083,27 +1029,43 @@ document.addEventListener('DOMContentLoaded', () => {
         movementFormContainer.style.display = 'none';
         document.getElementById('movementForm').reset();
     });
+    //funcion para validar token
     const menu = document.getElementById('menu');
     let token = localStorage.getItem('token');
+    async function validarToken(token) {
+        try {
+            const response = await fetch('/validateToken', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const data = await response.text();
+                return data; // Suponiendo que el backend devuelve un campo 'valido'
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error('Error validando el token:', error);
+            return null;
+        }
+    }
     async function usarValidacion(token) {
         const resultado = await validarToken(token);
         if (resultado) {
             console.log('Token válido:', resultado);
-            // Aquí puedes agregar la lógica que necesites cuando el token es válido
             showSection('home');
             menu.style.display = 'flex';
         } else {
             console.log('Token inválido o error en la validación');
-            // Aquí puedes manejar el caso de token inválido o error
             showSection('authenticate');
         }
     }
-
     if (token) {
         usarValidacion(token);
     } else {
-        // Redirigir al formulario de login si no hay token
         showSection('authenticate');
-
     }
 });

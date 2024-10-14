@@ -18,18 +18,18 @@
             </div>
             <ul>
                 <li><a href="#home" onclick="showSection('home')"><i class="fas fa-home"></i><span
-                            class="text">Home</span></a></li>
+                            class="text"> Home</span></a></li>
                 <li><a href="#productos" onclick="showSection('products')"><i class="fas fa-box"></i><span
-                            class="text">Productos</span></a></li>
+                            class="text"> Productos</span></a></li>
                 <li><a href="#movimientos" onclick="showSection('movimientos')"><i class="fas fa-exchange-alt"></i><span
-                            class="text">Movimientos</span></a></li>
+                            class="text"> Movimientos</span></a></li>
             </ul>
             <div class="bottom-section">
                 <div class="logout">
                     <a href="#logout" id="logOutBtn"><i class="fas fa-sign-out-alt"></i><span
                             class="text">Salir</span></a>
                 </div>
-                <button class="toggle-btn" id="hideMenuBtn">☰</button>
+                <button class="toggle-btn" id="hideMenuBtn"><i class="fas fa-chevron-left"></i></button>
             </div>
         </nav>
         <main class="content">
@@ -57,6 +57,7 @@
                 <button id="newProductBtn">Nuevo Producto</button>
                 <input type="text" id="filterInput" placeholder="Nombre de producto">
                 <button id="filterBtn">Filtrar</button>
+                <button id="cancelFilterBtn" style="display: none;">X</button>
                 <button id="downloadBtn">Descargar</button>
                 <table id="productTable">
                     <thead>
@@ -119,10 +120,11 @@
                 <h2>Movimientos</h2>
                 <button id="nuevoMovimientoBtn">Nuevo Movimiento</button>
                 <label for="startDate">Fecha de Inicio:</label>
-                <input type="datetime-local" id="startDate" name="startDate" >
+                <input type="datetime-local" id="startDate" name="startDate">
                 <label for="endDate">Fecha de Fin:</label>
-                <input type="datetime-local" id="endDate" name="endDate" >
+                <input type="datetime-local" id="endDate" name="endDate">
                 <button id="movementFilterBtn">Filtrar</button>
+                <button id="cancelMovementFilterBtn" style="display: none;">X</button>
                 <button id="movementDownloadBtn">Descargar</button>
                 <table id="movementTable">
                     <thead>
@@ -177,73 +179,71 @@
                 <button id="actualizarProductoBtn">Actualizar</button>
                 <button id="eliminarProductoBtn">Eliminar</button>
                 <label for="startDate">Fecha de Inicio:</label>
-                <input type="datetime-local" id="startDateMovementProduct" name="startDate" >
+                <input type="datetime-local" id="startDateMovementProduct" name="startDate">
                 <label for="endDate">Fecha de Fin:</label>
-                <input type="datetime-local" id="endDateMovementProduct" name="endDate" >
+                <input type="datetime-local" id="endDateMovementProduct" name="endDate">
                 <button id="MovementProductFilterBtn">Filtrar</button>
+                <button id="cancelMovementProductFilterBtn" style="display: none;">X</button>
                 <button id="MovementProductDownloadBtn">Descargar</button>
-                <table id="movementTable">
-                <div class="json-container" id="jsonContainer"></div>
-                <table id="productMovementTable">
-                    <thead>
-                        <tr>
-                            <th onclick="sortTableMovementsProduct(0)">ID</th>
-                            <th onclick="sortTableMovementsProduct(1)">Fecha</th>
-                            <th onclick="sortTableMovementsProduct(2)">Producto</th>
-                            <th onclick="sortTableMovementsProduct(3)">Cantidad</th>
-                            <th onclick="sortTableMovementsProduct(4)">Movimiento</th>
-                            <th onclick="sortTableMovementsProduct(5)">Motivo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows will be inserted here by JavaScript -->
-                    </tbody>
-                </table>
-                <div>
-                    <label for="productMovementPageSize">Movimientos por pagina:</label>
-                    <select id="productMovementPageSize">
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                    </select>
-                </div>
-                <div id="productMovementPaginationControls">
-                    <!-- Pagination buttons will be inserted here by JavaScript -->
-                </div>
-                <div id="productUpdateFormContainer" class="form-container">
-                    <form id="productUpdateForm">
-                        <label for="nombre">Nombre:</label>
-                        <input type="text" id="updateNombre" name="nombre" required>
-                        <label for="descripcion">Descripción:</label>
-                        <input type="text" id="updateDescription" name="descripcion" required>
-                        <label for="unidad">Unidad:</label>
-                        <select id="updateMeasureUnit" name="unidad">
-                            <option value="gr">gr</option>
-                            <option value="ml">ml</option>
-                            <option value="und">und</option>
+                    <div class="json-container" id="jsonContainer"></div>
+                    <table id="productMovementTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTableMovementsProduct(0)">ID</th>
+                                <th onclick="sortTableMovementsProduct(1)">Fecha</th>
+                                <th onclick="sortTableMovementsProduct(2)">Producto</th>
+                                <th onclick="sortTableMovementsProduct(3)">Cantidad</th>
+                                <th onclick="sortTableMovementsProduct(4)">Movimiento</th>
+                                <th onclick="sortTableMovementsProduct(5)">Motivo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                    <div>
+                        <label for="productMovementPageSize">Movimientos por pagina:</label>
+                        <select id="productMovementPageSize">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
                         </select>
-                        <label for="categoria">Categoría:</label>
-                        <select id="categorySelect" name="categoria">
-
-                        </select>
-                        <button type="submit">Guardar</button>
-                        <button type="button" id="cancelUpdateProductBtn">Cancelar</button>
-                    </form>
-                    <button type="button" id="newCategoryUpdateProductBtn">Nueva Categoría</button>
-                    <div id="newCategoryUpdateProductFormContainer" style="display: none;">
-                        <form id="Form">
-                            <label for="nuevaCategoriaNombre">Nombre de la nueva categoría:</label>
-                            <input type="text" id="newCategoryNameUpdateProductForm" name="nuevaCategoriaNombre"
-                                required>
-                            <button type="submit" id="guardarNuevaCategoriaBtn">Guardar</button>
-                            <button type="button" id="cancelarNuevaCategoriaBtn">Cancelar</button>
-                        </form>
                     </div>
-                </div>
+                    <div id="productMovementPaginationControls">
+                        <!-- Pagination buttons will be inserted here by JavaScript -->
+                    </div>
+                    <div id="productUpdateFormContainer" class="form-container">
+                        <form id="productUpdateForm">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="updateNombre" name="nombre" required>
+                            <label for="descripcion">Descripción:</label>
+                            <input type="text" id="updateDescription" name="descripcion" required>
+                            <label for="unidad">Unidad:</label>
+                            <select id="updateMeasureUnit" name="unidad">
+                                <option value="gr">gr</option>
+                                <option value="ml">ml</option>
+                                <option value="und">und</option>
+                            </select>
+                            <label for="categoria">Categoría:</label>
+                            <select id="categorySelect" name="categoria">
+                            </select>
+                            <button type="submit">Guardar</button>
+                            <button type="button" id="cancelUpdateProductBtn">Cancelar</button>
+                        </form>
+                        <button type="button" id="newCategoryUpdateProductBtn">Nueva Categoría</button>
+                        <div id="newCategoryUpdateProductFormContainer" style="display: none;">
+                            <form id="Form">
+                                <label for="nuevaCategoriaNombre">Nombre de la nueva categoría:</label>
+                                <input type="text" id="newCategoryNameUpdateProductForm" name="nuevaCategoriaNombre"
+                                    required>
+                                <button type="submit" id="guardarNuevaCategoriaBtn">Guardar</button>
+                                <button type="button" id="cancelarNuevaCategoriaBtn">Cancelar</button>
+                            </form>
+                        </div>
+                    </div>
             </section>
         </main>
     </div>
     <script src="scripts.js"></script>
 </body>
-
 </html>

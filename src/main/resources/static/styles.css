@@ -1,4 +1,5 @@
 /* styles.css */
+/* Estilo general*/
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -11,29 +12,36 @@ body {
     display: flex;
     width: 100%;
 }
-#authenticate {
 
+/* estilo para formulario de autenticación*/
+#authenticate {
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
     background-color: #f0f0f0;
 }
+
 #authenticateFormContainer {
-    background-color: #181951; /* Color azul claro */
-    border: 2px solid #000; /* Borde negro */
+    background-color: #181951;
+    border: 2px solid #000;
     padding: 20px;
     color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    width: 25%; }
-    #authenticateFormContainer form {
-        display: flex;
-        flex-direction: column;
-        
-    }
-    #authenticateFormContainer label, input, button {
-        margin: 10px 0;
-    }
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 25%;
+}
+
+#authenticateFormContainer form {
+    display: flex;
+    flex-direction: column;
+}
+
+#authenticateFormContainer label,
+input,
+button {
+    margin: 10px 0;
+}
+/* estilo del menu*/
 .sidebar {
     width: 250px;
     height: 100vh;
@@ -43,8 +51,8 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: #181951; /* Azul oscuro */
-    color: #ffffff; /* Letra blanca */
+    background-color: #181951;
+    color: #ffffff;
     transition: width 0.3s;
     overflow: hidden;
 }
@@ -55,7 +63,7 @@ body {
 
 .sidebar .logo img {
     width: 100%;
-    height: auto;
+    height: 100%;
 }
 
 .sidebar ul {
@@ -75,13 +83,16 @@ body {
     align-items: center;
     padding: 10px;
     text-decoration: none;
-    color: #ffffff; /* Letra blanca */
+    color: #ffffff;
+    /* Letra blanca */
 }
 
-.sidebar ul li a .icon {
+.sidebar ul li .icon {
     margin-right: 10px;
 }
-
+.sidebar ul li .text{
+    margin-left: 8px;
+}
 .sidebar.collapsed ul li a .text {
     display: none;
 }
@@ -89,8 +100,8 @@ body {
 .sidebar .bottom-section {
     display: flex;
     flex-direction: column;
-   
     margin-bottom: 10px;
+    position: relative; 
 }
 
 .sidebar .logout {
@@ -103,32 +114,40 @@ body {
     background: none;
     border: none;
     font-size: 24px;
-    color: #ffffff; /* Letra blanca */
+    color: #ffffff;
     cursor: pointer;
+    position: absolute; /* Cambiado */
+    right: 5px;
+}
+
+.toggle-btn.rotate {
+    transform: rotate(180deg);
 }
 
 .sidebar .logout a {
     display: flex;
     align-items: left;
     text-decoration: none;
-    color: #ffffff; /* Letra blanca */
+    color: #ffffff;
+    /* Letra blanca */
 }
-
+.sidebar .logout .text{
+    margin-left: 8px;
+}
 .sidebar.collapsed .logout .text {
     display: none;
 }
 
+.sidebar.collapsed~.content {
+    margin-left: 60px;
+}
+/* estilo sección */
 .content {
     margin-left: 250px;
     transition: margin-left 0.3s;
     flex: 1;
     padding: 20px;
 }
-
-.sidebar.collapsed ~ .content {
-    margin-left: 60px;
-}
-
 .hidden {
     display: none;
 }
@@ -150,7 +169,9 @@ form label {
     margin-top: 10px;
 }
 
-form input, form select, form button {
+form input,
+form select,
+form button {
     width: 100%;
     margin-top: 5px;
 }
@@ -160,13 +181,57 @@ table {
     border-collapse: collapse;
 }
 
-table, th, td {
-    border: 1px solid #ddd;
+th {
+    background-color: #181951; /* Color azul para el encabezado */
+    color: white; /* Letra blanca */
+    padding: 5px;
+    border: 1px solid   #eeeef3;
+}
+
+td {
+    padding: 5px;
+    border: 1px solid   #181951; /* Bordes del mismo color que el encabezado */
 }
 
 th, td {
-    padding: 8px;
-    text-align: left;
+    text-align: center;
+}
+
+
+button {
+    background-color: #181951; /* Fondo azul para los botones */
+    color: white; /* Letras blancas */
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3; /* Color azul más oscuro al pasar el ratón */
+}
+
+input {
+    padding: 5px;
+    border: 1px solid #181951; /* Borde azul para los inputs */
+    border-radius: 5px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #0056b3; /* Borde azul más oscuro al enfocar */
+}
+select {
+    padding: 5px;
+    border: 1px solid #181951; /* Borde azul */
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+}
+
+select:focus {
+    outline: none;
+    border-color: #0056b3; /* Borde azul más oscuro al enfocar */
 }
 
 .json-container {
@@ -175,14 +240,17 @@ th, td {
     max-width: 400px;
     margin: auto;
     padding: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid #181951;
     border-radius: 5px;
+    margin-bottom: 20px;
 }
+
 .json-item {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
 }
+
 .json-key {
     font-weight: bold;
 }
