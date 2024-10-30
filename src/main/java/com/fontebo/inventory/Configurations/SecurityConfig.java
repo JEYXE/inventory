@@ -26,7 +26,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/authenticate","/index.html","/scripts.js","/styles.css","/logo.png","/favicon.ico").permitAll()
+                .requestMatchers("/authenticate","/index.html","/scripts.js","/styles.css","/logo.png","/favicon.ico","/fondo_crf.jpg","/fondo_fontebo.png").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
