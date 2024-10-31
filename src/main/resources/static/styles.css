@@ -19,7 +19,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-image: url('fondo_crf.png');
+    background-image: url('fondo_crf.jpg');
     /*background-image: url('fondo_fontebo.png');*/
     background-color: #f0f0f0; /* Este color se mostrará mientras se carga la imagen o si la imagen no se puede cargar */
     background-size: cover; /* Ajusta la imagen para que cubra todo el elemento */
