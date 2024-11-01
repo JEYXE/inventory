@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const userName = document.getElementById('userName').value;
         const password = document.getElementById('password').value;
-        const credencials = {
+        const credentials = {
             userName,
             password
         }
@@ -17,21 +17,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(credencials)
+                body: JSON.stringify(credentials) // Asegúrate de que 'credentials' esté correctamente definida
             });
-            if (!response.ok) {
-                alert('Usuario ó contraseña incorrecto');
+        
+            if (response.status === 401) {
+                alert('Usuario o contraseña incorrecto');
                 throw new Error('No se logró el ingreso');
+            } else if (response.status === 200) {
+                const tokenResponse = await response.json();
+                showSection('home');
+                menu.style.display = 'flex';
+                localStorage.token = tokenResponse.token;
+                token = localStorage.token;
+            } else {
+                throw new Error('Error inesperado en la autenticación');
             }
-            const tokenResponse = await response.json();
-            showSection('home');
-            menu.style.display = 'flex';
-            localStorage.token = tokenResponse.token;
-            localStorage.email = tokenResponse.userName;
-            token = localStorage.token;
         } catch (error) {
             console.error('Error:', error);
         }
+        
     };
     authenticateFormContainer.querySelector('form').addEventListener('submit', authenticate);
     //Funciones para el menu principal ***********************************************************************
@@ -113,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     return response.blob();
                 } else {
+                    location.reload();
                     throw new Error('Error al descargar el reporte');
                 }
             })
@@ -266,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             if (!response.ok) {
+                location.reload();
                 throw new Error('Error al obtener las categorías');
             }
             const categorias = await response.json();
@@ -305,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 const rspuesta = await response.json();
                 alert(rspuesta.name);
+                location.reload();
                 throw new Error('Error al crear el producto');
             }
             const nuevoProducto = await response.json();
@@ -444,8 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
             productMovementFilterStartDate = startDate;
             productmovementFilterEndDate = endDate;
             productMovementTableLoad(productMovementCurrentPage, productMovementId);
-            ProductMovementFilterBTn.style.display='none';
-            cancelMovementProductFilterBtn.style.display='inline'
+            ProductMovementFilterBTn.style.display = 'none';
+            cancelMovementProductFilterBtn.style.display = 'inline'
         }
     }
     const ProductMovementFilterBTn = document.getElementById('MovementProductFilterBtn');
@@ -455,11 +462,11 @@ document.addEventListener('DOMContentLoaded', () => {
     //funcion para quitar filtro
     const cancelMovementProductFilterBtn = document.getElementById('cancelMovementProductFilterBtn');
     cancelMovementProductFilterBtn.addEventListener('click', () => {
-        productMovementStartDateInput.value='';
-        productMovementEndDateInput.value='';
+        productMovementStartDateInput.value = '';
+        productMovementEndDateInput.value = '';
         validateProductMovementFilter();
-                    ProductMovementFilterBTn.style.display='inline';
-            cancelMovementProductFilterBtn.style.display='none'
+        ProductMovementFilterBTn.style.display = 'inline';
+        cancelMovementProductFilterBtn.style.display = 'none'
     });
     //Función para descargar reporte de movimientos por producto
     function productMovementDownloadReport() {
