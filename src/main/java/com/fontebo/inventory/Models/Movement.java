@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "movements")
 @Entity(name = "Movement")
-public class Movement {
+public class Movement extends Auditable<String>{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
