@@ -858,7 +858,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 directionMovement = 'DESC';
                 movementTableLoad(movementCurrentPage);
             } else {
-                sortOrderMovements = "id";
+                sortByMovement = "id";
                 directionMovement = 'ASC';
                 movementTableLoad(movementCurrentPage);
             }
